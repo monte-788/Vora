@@ -1,0 +1,2723 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vora — Your stories, your screen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet" />
+    <style>
+:root {
+  color-scheme: dark;
+  --accent: #5b91ff;
+  --paper: #edf2fb;
+  --muted: #98a8c1;
+  --bg: #07101f;
+  --surface: #0d192b;
+  --gutter: clamp(22px, 4.35vw, 70px);
+  font-family: "DM Sans", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scrollbar-color: #29405f #07101f; }
+body { margin: 0; min-width: 320px; background: var(--bg); color: var(--paper); }
+button, input { font: inherit; }
+button { color: inherit; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.app-shell { overflow: hidden; min-height: 100vh; }
+
+.topbar {
+  height: 82px; padding: 0 var(--gutter); position: absolute; inset: 0 0 auto; z-index: 10;
+  display: flex; align-items: center; gap: 43px;
+  background: linear-gradient(180deg, rgba(0,0,0,.66), transparent);
+}
+.brand, .footer-brand { font-family: "Manrope", sans-serif; font-weight: 800; letter-spacing: .08em; font-size: 27px; }
+.brand { color: var(--accent); }
+.brand-dot { color: #f4f2ee; }
+.main-nav { display: flex; align-items: center; gap: 24px; height: 100%; }
+.nav-link { color: #d4d2cf; font-size: 13px; transition: color .2s ease; }
+.nav-link:hover, .nav-link.active { color: #fff; }
+.nav-link.active { font-weight: 700; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 21px; }
+.add-movie-button { min-height: 34px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px; border: 1px solid rgba(113,159,255,.55); border-radius: 4px; background: rgba(41,82,146,.32); color: #e8f0ff; cursor: pointer; font-size: 11px; font-weight: 700; transition: background .2s,border-color .2s; white-space: nowrap; }
+.add-movie-button:hover { background: rgba(66,116,200,.58); border-color: #8cb2ff; }
+.add-movie-button > span:first-child { color: #a9c6ff; font-size: 19px; line-height: .8; }
+.add-movie-button:disabled { opacity: .45; cursor: not-allowed; }
+.icon-button { border: 0; background: transparent; padding: 0; cursor: pointer; }
+.icon-button { display: grid; place-items: center; width: 25px; height: 30px; }
+.icon-button svg { fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; width: 22px; height: 22px; }
+.search-box { display: flex; align-items: center; border: 1px solid transparent; transition: background .2s,border-color .2s; }
+.search-box.open { border-color: rgba(255,255,255,.7); background: rgba(0,0,0,.73); padding: 5px 10px; }
+.search-box input { width: 0; opacity: 0; border: 0; padding: 0; outline: 0; color: #fff; background: transparent; transition: width .22s, opacity .2s; font-size: 12px; }
+.search-box.open input { width: 175px; opacity: 1; padding-left: 9px; }
+.search-box input::placeholder { color: #aaa; }
+.hero { height: min(770px, 83vh); min-height: 650px; position: relative; display: flex; align-items: center; }
+.hero-art {
+  position: absolute; inset: 0 0 0 13%; background-color: #10213a;
+  background-image: radial-gradient(ellipse at 72% 30%, rgba(63,108,177,.38), transparent 42%), linear-gradient(135deg,#0d1a2d,#08111f 65%,#132746);
+  background-size: cover; background-position: center;
+  filter: saturate(.72);
+}
+.hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #07101f 0%, rgba(7,16,31,.93) 9%, rgba(7,16,31,.62) 28%, rgba(7,16,31,.08) 66%), linear-gradient(0deg, #07101f 0%, transparent 28%, rgba(0,0,0,.24) 100%); }
+.hero-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 75% 38%, transparent 15%, rgba(0,0,0,.08) 65%, rgba(0,0,0,.18)); pointer-events: none; }
+.hero-content { position: relative; z-index: 2; width: min(500px, 56vw); margin: 70px 0 0 var(--gutter); }
+.eyebrow, .section-kicker, .dialog-kicker { margin: 0; color: #d7d5d1; letter-spacing: .2em; font-size: 10px; font-weight: 700; }
+.eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 20px; }
+.eyebrow-mark { color: var(--accent); font-family: "Manrope", sans-serif; font-size: 21px; font-weight: 800; letter-spacing: -.08em; }
+.hero h1 { font-family: "Manrope", sans-serif; font-size: clamp(64px, 8.8vw, 120px); line-height: .83; letter-spacing: -.075em; margin: 0 0 26px -7px; font-weight: 800; text-shadow: 0 4px 28px rgba(0,0,0,.24); }
+.hero h1 span { font-size: .78em; letter-spacing: .045em; font-weight: 500; }
+.hero-meta { display: flex; align-items: center; gap: 11px; color: #eee; font-size: 12px; }
+.hero-meta[hidden] { display: none; }
+.hero h1.featured-title { max-width: 720px; overflow-wrap: anywhere; font-size: clamp(42px, 6.3vw, 82px); line-height: .98; letter-spacing: -.055em; }
+.match { font-weight: 700; color: #63d28a; }
+.age-rating { color: #e6e3df; padding: 2px 5px; border: 1px solid #777; font-size: 10px; }
+.ultra-badge { border: 1px solid rgba(255,255,255,.65); border-radius: 2px; padding: 1px 4px; color: #d1cfcc; font-size: 9px; font-weight: 700; letter-spacing: .1em; }
+.hero-description { max-width: 420px; margin: 17px 0 21px; color: #e4e1de; font-size: 15px; line-height: 1.62; text-shadow: 0 1px 8px rgba(0,0,0,.4); }
+.hero-featured .hero-art { background-size: cover; background-position: center; }
+.hero-actions { display: flex; gap: 10px; }
+.button { min-height: 43px; padding: 0 20px; display: inline-flex; justify-content: center; align-items: center; gap: 10px; border: 0; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 700; transition: transform .18s, background .18s; }
+.button:hover { transform: translateY(-1px); }
+.button svg { width: 21px; height: 21px; }
+.button-light { background: #f4f2ef; color: #151515; }
+.button-light:hover { background: #d8d6d2; }
+.button-light svg { fill: currentColor; stroke: none; }
+.button-muted { background: rgba(104,104,104,.76); color: #fff; }
+.button-muted:hover { background: rgba(125,125,125,.9); }
+.button-muted svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.hero-side-note { position: absolute; right: 0; bottom: 25%; z-index: 2; display: flex; align-items: center; gap: 15px; background: rgba(40,40,40,.42); padding: 9px 32px 9px 12px; font-size: 11px; }
+.side-note-line { width: 3px; height: 18px; background: var(--accent); }
+.hero-bottom-fade { position: absolute; z-index: 1; inset: auto 0 0; height: 175px; background: linear-gradient(0deg, #07101f, transparent); pointer-events: none; }
+
+.content-area { position: relative; z-index: 3; margin-top: -77px; }
+.shelf { padding: 0 var(--gutter); margin-bottom: 41px; scroll-margin-top: 36px; }
+.shelf-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 15px; }
+.section-kicker { color: #878581; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 5px; }
+.shelf h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 21px; letter-spacing: -.035em; font-weight: 700; }
+.heading-arrow { display: inline-block; color: var(--accent); font-size: 26px; line-height: 14px; transform: translateY(2px); opacity: .85; }
+.watched-title { color: #aaa7a2; font-size: 15px; font-weight: 500; margin-left: 4px; }
+.shelf-controls { display: flex; gap: 7px; }
+.carousel-button { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #424242; border-radius: 50%; background: rgba(255,255,255,.025); color: #dedbd7; cursor: pointer; font-size: 22px; line-height: 1; transition: background .2s, border-color .2s; }
+.carousel-button:hover { background: #356fdb; border-color: #5b91ff; color: white; }
+.card-row { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 64px) / 5); gap: 16px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; scrollbar-width: none; padding: 5px 1px 12px; }
+.card-row::-webkit-scrollbar { display: none; }
+.title-card { min-width: 0; aspect-ratio: 1.73 / 1; position: relative; border: 0; border-radius: 5px; overflow: hidden; background: #1c1c1c; cursor: pointer; isolation: isolate; transition: transform .25s ease, box-shadow .25s ease; text-align: left; color: #fff; }
+.title-card:hover, .title-card:focus-visible { transform: scale(1.045); z-index: 2; box-shadow: 0 10px 26px rgba(0,0,0,.5); }
+.card-image { position: absolute; inset: 0; background-position: center; background-size: cover; transition: transform .35s ease; }
+.title-card:hover .card-image { transform: scale(1.06); }
+.card-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.88), transparent 72%), linear-gradient(90deg,rgba(0,0,0,.2),transparent 80%); }
+.card-copy { position: absolute; z-index: 1; left: 13px; right: 11px; bottom: 11px; }
+.card-tag { color: #f4f1ed; font-size: 8px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; opacity: .8; }
+.card-title { display: block; margin-top: 3px; font: 700 17px/1.07 "Manrope", sans-serif; letter-spacing: -.04em; }
+.card-year { display: block; margin-top: 5px; color: #d0cdca; font-size: 9px; letter-spacing: .04em; }
+.card-rating { position: absolute; top: 10px; left: 10px; z-index: 1; padding: 3px 5px; border-radius: 2px; background: rgba(7,7,7,.55); font-size: 8px; font-weight: 700; letter-spacing: .04em; }
+.shelf[hidden], .empty-state[hidden], .no-search-results[hidden], .episode-list[hidden] { display: none; }
+.empty-state { display: flex; align-items: center; gap: 20px; margin: 0 var(--gutter) 40px; padding: 22px; border: 1px solid #203551; border-radius: 8px; background: linear-gradient(120deg,rgba(21,42,72,.58),rgba(11,23,40,.55)); }
+.empty-state-mark { display: grid; flex: 0 0 43px; place-items: center; width: 43px; height: 43px; border: 1px solid #42679d; border-radius: 50%; color: #a8c5fa; font-size: 25px; }
+.empty-state .section-kicker { margin-bottom: 5px; }
+.empty-state h2 { margin: 0; font: 700 19px/1.25 "Manrope",sans-serif; }
+.empty-state p:not(.section-kicker) { margin: 5px 0 0; color: #91a3bd; font-size: 12px; line-height: 1.5; }
+.empty-state .button { flex: 0 0 auto; margin-left: auto; }
+.no-search-results { margin: 0 var(--gutter) 35px; color: #a8b7cc; font-size: 13px; }
+
+.footer { margin: 75px var(--gutter) 0; padding: 26px 0 34px; border-top: 1px solid #21314a; color: #8393ac; }
+.footer-brand { color: var(--accent); font-size: 19px; }
+.footer p { margin: 6px 0 18px; font-size: 11px; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 10px; }
+.footer-links a:hover { color: #d8d5d1; }
+.copyright { display: block; margin-top: 22px; font-size: 9px; }
+.toast { position: fixed; z-index: 30; left: 50%; bottom: 28px; transform: translate(-50%, 16px); padding: 12px 19px; border-radius: 4px; background: #f4f2ef; color: #171717; font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.title-dialog { position: fixed; inset: 0; width: 100%; max-width: 560px; height: 100%; max-height: none; margin: 0 auto; border: 0; padding: 0; overflow: auto; background: #0d192b; color: #fff; }
+.title-dialog::backdrop { background: #000; }
+.dialog-art { height: 62vh; min-height: 330px; background-color: #13223a; background-size: cover; background-position: center top; position: relative; }
+.dialog-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg,#0d192b 2%,rgba(13,25,43,.55) 40%,transparent 75%); }
+.dialog-close { position: absolute; z-index: 2; top: 14px; left: 14px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(18,18,18,.6); color: #fff; font-size: 26px; cursor: pointer; line-height: 1; }
+.dialog-content { position: relative; margin-top: -120px; padding: 0 20px 36px; text-align: center; }
+.dialog-content h2 { margin: 0 0 12px; font: 800 38px/1.05 "Manrope",sans-serif; letter-spacing: -.03em; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.dialog-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: center; font-size: 13px; font-weight: 700; color: #e6e4e0; }
+.dialog-meta span + span::before { content: "|"; margin-right: 12px; color: #7d8ba3; font-weight: 400; }
+.dialog-meta .star { color: #f5c518; }
+.age-badge { padding: 0 5px; border: 1.5px solid #e6e4e0; border-radius: 4px; font-size: 11px; }
+.dialog-meta span.age-badge::before { display: none; }
+.dialog-watch { display: block; width: 100%; margin: 18px 0 14px; min-height: 52px; border: 0; border-radius: 26px; background: #e4e6ea; color: #111; font: 800 17px "Manrope",sans-serif; letter-spacing: .06em; cursor: pointer; }
+.dialog-watch[hidden] { display: none; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+.dialog-description { margin: 18px 0 22px; color: #e0e0e0; font-size: 14px; line-height: 1.55; text-align: left; }
+.season-bar[hidden] { display: none; }
+.season-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+#season-select { padding: 6px 28px 6px 0; border: 0; background: transparent; color: #fff; font: 800 24px "Manrope",sans-serif; cursor: pointer; }
+#season-select option { background: #0d192b; font-size: 16px; }
+.episode-count-note { color: #9eafc7; font-size: 12px; }
+.episode-list { display: flex; gap: 12px; margin-top: 10px; padding-bottom: 8px; overflow-x: auto; scroll-snap-type: x proximity; text-align: left; }
+.episode-card { position: relative; flex: 0 0 62%; scroll-snap-align: start; }
+.episode-card-watch { display: block; width: 100%; border: 0; padding: 0; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+.episode-thumb { display: grid; place-items: center; aspect-ratio: 16/9; border-radius: 12px; background: #13223a center/cover; font-size: 26px; color: rgba(255,255,255,.85); text-shadow: 0 1px 8px #000; }
+.episode-card-watch:hover .episode-thumb { outline: 2px solid #fff; }
+.episode-label { display: block; margin-top: 8px; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.episode-remove { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: 0; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; font-size: 17px; cursor: pointer; }
+@media (min-width: 700px) { .title-dialog { max-width: 760px; } .episode-card { flex-basis: 260px; } }
+.episode-remove { flex: 0 0 auto; width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #3e5d88; border-radius: 50%; background: transparent; color: #9eafc7; cursor: pointer; font-size: 14px; line-height: 1; transition: background .2s, color .2s, border-color .2s; }
+.episode-remove:hover { background: #3a1620; border-color: #b25a6d; color: #ffb0bd; }
+.dialog-episode-form { margin: 15px 0 5px; }
+.dialog-episode-form[hidden] { display: none; }
+
+.add-dialog { position: fixed; width: min(620px, calc(100% - 30px)); max-width: 620px; max-height: min(800px, calc(100% - 30px)); overflow: auto; padding: 25px 28px 27px; border: 1px solid rgba(130,170,240,.23); border-radius: 10px; background: #0d192b; color: var(--paper); box-shadow: 0 25px 100px rgba(0,0,0,.7); }
+.add-dialog::backdrop { background: rgba(1,6,14,.78); backdrop-filter: blur(6px); }
+.add-dialog-heading { display: flex; justify-content: space-between; align-items: start; margin-bottom: 22px; }
+.add-dialog-heading h2 { margin: 6px 0 0; font: 800 27px/1.1 "Manrope",sans-serif; letter-spacing: -.04em; }
+.add-dialog-heading .dialog-close { position: static; flex: 0 0 auto; }
+.field-label { display: block; margin: 14px 0 7px; color: #dbe5f6; font-size: 11px; font-weight: 600; }
+.field-label > span { color: #8496b2; font-weight: 400; }
+.form-control { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid #2d405e; border-radius: 5px; outline: 0; background: #081323; color: #eef3fc; font-size: 12px; }
+.form-control::placeholder { color: #70809a; }
+.form-control:focus { border-color: #6595ed; box-shadow: 0 0 0 3px rgba(91,145,255,.14); }
+.form-control option { background: #0d192b; }
+.form-row { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; }
+.genre-row { grid-template-columns: 1fr 1fr; }
+.genre-hint { margin-top: 7px; }
+.form-field { min-width: 0; }
+.form-field .field-label { min-height: 15px; }
+.upload-control { position: relative; display: flex; align-items: center; gap: 12px; min-height: 62px; margin-top: 12px; padding: 11px 14px; border: 1px dashed #415b82; border-radius: 5px; background: rgba(25,47,78,.32); cursor: pointer; transition: background .2s,border-color .2s; }
+.upload-control:hover { border-color: #79a5f6; background: rgba(42,75,121,.4); }
+.upload-icon { display: grid; place-items: center; width: 33px; height: 33px; border-radius: 50%; background: #1d3964; color: #b6ceff; font-size: 20px; }
+.upload-control strong, .upload-control small { display: block; }
+.upload-control strong { color: #e3ebf9; font-size: 11px; }
+.upload-control small { margin-top: 4px; color: #879ab7; font-size: 10px; }
+.upload-control input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.banner-preview { position: relative; height: 122px; margin-top: 10px; overflow: hidden; border: 1px solid #263a58; border-radius: 5px; background: #07101f; }
+.banner-preview[hidden] { display: none; }
+.banner-preview img { width: 100%; height: 100%; object-fit: cover; }
+.banner-preview button { position: absolute; top: 7px; right: 7px; width: 27px; height: 27px; border: 0; border-radius: 50%; background: rgba(2,8,18,.8); color: white; cursor: pointer; font-size: 19px; }
+.description-input { min-height: 84px; resize: vertical; line-height: 1.5; }
+.field-hint { margin: 7px 0 0; color: #91a2bc; font-size: 10px; line-height: 1.5; }
+.form-error { min-height: 14px; margin: 9px 0 0; color: #ff999f; font-size: 11px; }
+.form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 5px; }
+.cancel-button { min-height: 40px; padding: 0 14px; border: 1px solid #384a65; border-radius: 4px; background: transparent; color: #d2deef; cursor: pointer; font-size: 12px; }
+.cancel-button:hover { background: #172741; }
+.submit-movie-button { min-height: 40px; padding-inline: 16px; background: #4c83ed; color: #fff; }
+.submit-movie-button:hover { background: #6397f9; }
+.submit-movie-button:disabled { opacity: .6; cursor: wait; }
+.type-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 15px; padding: 0; border: 0; }
+.type-picker legend { flex-basis: 100%; margin-bottom: 8px; }
+.type-picker label { position: relative; cursor: pointer; }
+.type-picker input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.type-picker label span { display: block; padding: 9px 16px; border: 1px solid #2d405e; border-radius: 5px; background: #081323; color: #b6c4da; font-size: 11px; }
+.type-picker input:checked + span { border-color: #6595ed; background: #172e50; color: #f3f7ff; }
+.type-picker input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+.episode-form-section { margin-top: 13px; padding: 13px; border: 1px solid #243957; border-radius: 6px; background: rgba(6,17,33,.55); }
+.episode-form-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.episode-form-heading .field-label { margin: 0 0 4px; }
+.episode-form-heading .field-hint { margin: 0; }
+.add-episode-button { min-height: 30px; padding: 0 9px; border: 1px solid #3e5d88; border-radius: 4px; background: #152b49; color: #c5d7f5; cursor: pointer; font-size: 10px; white-space: nowrap; }
+.add-episode-button:hover { background: #203f69; }
+.episode-form-card { margin-top: 9px; padding: 11px; border: 1px solid #243957; border-radius: 5px; background: #0a1728; }
+.episode-form-card-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #c7d5ea; font-size: 10px; }
+.remove-episode { padding: 4px 6px; border: 0; background: transparent; color: #92a5c0; cursor: pointer; font-size: 10px; }
+.remove-episode:hover:not(:disabled) { color: #fff; }
+.remove-episode:disabled { opacity: .35; cursor: not-allowed; }
+.episode-number-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.episode-input-label { display: block; margin-top: 8px; color: #c6d3e6; font-size: 10px; }
+.episode-input-label .form-control { margin-top: 5px; }
+
+@media (min-width: 1500px) {
+  .hero { height: 820px; }
+  .card-row { grid-auto-columns: calc((100% - 80px) / 6); gap: 16px; }
+}
+@media (max-width: 1050px) {
+  .topbar { gap: 28px; }
+  .main-nav { gap: 16px; }
+  .card-row { grid-auto-columns: calc((100% - 48px) / 4); }
+  .hero-art { left: 7%; }
+}
+@media (max-width: 760px) {
+  :root { --gutter: 22px; }
+  .topbar { height: 68px; gap: 20px; }
+  .brand { font-size: 23px; }
+  .main-nav { position: absolute; top: 67px; left: var(--gutter); right: var(--gutter); height: 31px; overflow: auto; gap: 20px; scrollbar-width: none; }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-link { white-space: nowrap; font-size: 11px; }
+  .topbar-actions { gap: 14px; }
+  .search-box.open { position: absolute; top: 17px; right: 137px; }
+  .search-box.open input { width: min(175px, 34vw); }
+  .hero { min-height: 620px; height: 77vh; max-height: 750px; align-items: end; padding-bottom: 118px; }
+  .hero-art { inset: 0; background-position: 57% center; }
+  .hero-art::after { background: linear-gradient(0deg,#07101f 0%,rgba(7,16,31,.9) 9%,rgba(7,16,31,.35) 52%,rgba(0,0,0,.28) 100%), linear-gradient(90deg,rgba(0,0,0,.18),transparent 60%); }
+  .hero-content { width: min(430px, calc(100% - 44px)); margin: 0 0 0 var(--gutter); }
+  .hero h1 { font-size: clamp(61px, 14vw, 94px); margin-bottom: 20px; }
+  .hero-description { font-size: 13px; max-width: 370px; margin-top: 13px; }
+  .hero-side-note { display: none; }
+  .content-area { margin-top: -58px; }
+  .shelf { margin-bottom: 33px; }
+  .shelf h2 { font-size: 18px; }
+  .section-kicker { font-size: 8px; }
+  .card-row { grid-auto-columns: calc((100% - 18px) / 2.3); gap: 9px; }
+  .card-copy { left: 9px; right: 7px; bottom: 8px; }
+  .card-title { font-size: 14px; }
+  .card-tag { font-size: 7px; }
+  .card-year { font-size: 8px; }
+  .empty-state { align-items: flex-start; flex-wrap: wrap; gap: 12px; padding: 16px; }
+  .empty-state > div { flex: 1 1 calc(100% - 60px); }
+  .empty-state .button { margin-left: 55px; }
+  .footer { margin-top: 55px; }
+}
+@media (max-width: 430px) {
+  .topbar { gap: 13px; }
+  .topbar-actions { gap: 11px; }
+  .add-movie-button { width: 33px; height: 33px; min-height: 33px; justify-content: center; padding: 0; }
+  .add-movie-label { display: none; }
+  .hero-meta { gap: 7px; font-size: 10px; }
+  .hero-description { max-width: 310px; }
+  .button { min-height: 40px; padding: 0 15px; }
+  .card-row { grid-auto-columns: 67%; }
+  .shelf-heading { align-items: center; }
+  .shelf-controls { gap: 5px; }
+  .carousel-button { width: 26px; height: 26px; font-size: 19px; }
+  .watched-title { display: none; }
+  .add-dialog { padding: 21px 18px 22px; }
+  .add-dialog-heading h2 { font-size: 24px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-field .field-label { min-height: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* Remove title */
+.dialog-actions { flex-wrap: wrap; }
+.remove-title-button { margin-left: auto; min-height: 39px; padding: 0 14px; border: 1px solid rgba(255,122,134,.4); border-radius: 4px; background: transparent; color: #ff9aa2; cursor: pointer; font-size: 12px; font-weight: 600; transition: background .2s, border-color .2s; }
+.remove-title-button:hover { background: rgba(255,90,105,.14); border-color: #ff7a86; }
+.remove-confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding: 13px 14px; border: 1px solid rgba(255,122,134,.35); border-radius: 6px; background: rgba(120,20,35,.22); }
+.remove-confirm[hidden] { display: none; }
+.remove-confirm > p:first-child { flex: 1 1 100%; margin: 0; color: #ffd9dc; font-size: 12px; line-height: 1.5; }
+.danger-button { min-height: 40px; padding: 0 14px; border: 0; border-radius: 4px; background: #d64556; color: #fff; cursor: pointer; font-size: 12px; font-weight: 700; }
+.danger-button:hover:not(:disabled) { background: #e85a6b; }
+.danger-button:disabled { opacity: .6; cursor: wait; }
+.remove-error { flex: 1 1 100%; margin: 0; min-height: 0; }
+.remove-error:empty { display: none; }
+
+/* Export library */
+.save-library-button { position: relative; min-height: 34px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,.22); border-radius: 4px; background: rgba(255,255,255,.06); color: #e8f0ff; cursor: pointer; font-size: 11px; font-weight: 700; white-space: nowrap; transition: background .2s, border-color .2s; }
+.save-library-button:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.45); }
+.save-library-button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.save-dot { display: none; width: 7px; height: 7px; border-radius: 50%; background: #ffb547; box-shadow: 0 0 0 3px rgba(255,181,71,.2); }
+.save-library-button.has-changes .save-dot { display: inline-block; }
+@media (max-width: 430px) {
+  .save-library-button { width: 33px; height: 33px; min-height: 33px; justify-content: center; padding: 0; }
+  .save-library-label { display: none; }
+  .save-dot { position: absolute; top: 3px; right: 3px; }
+}
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Vora home">VORA<span class="brand-dot">.</span></a>
+        <nav class="main-nav" aria-label="Primary">
+          <a class="nav-link active" href="#top">Home</a>
+          <a class="nav-link" href="#movies-shelf">Movies</a>
+          <a class="nav-link" href="#shows-shelf">Shows</a>
+        </nav>
+        <div class="topbar-actions">
+          <form id="search-form" class="search-box" role="search">
+            <button id="search-toggle" class="icon-button" type="button" aria-label="Search your library">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            </button>
+            <input id="search-input" type="search" placeholder="Titles, genres, episodes" aria-label="Search your library" autocomplete="off" />
+          </form>
+          <button id="open-tmdb-settings" class="add-movie-button" type="button" title="Set a free TMDB API key to auto-fill banner, genre, and description">
+            <span aria-hidden="true">⚙</span><span class="add-movie-label">TMDB key</span>
+          </button>
+          <button id="open-webdav" class="add-movie-button" type="button" title="Connect a WebDAV server to scan, sort, and import your movies and shows automatically">
+            <span aria-hidden="true">📡</span><span class="add-movie-label">WebDAV</span>
+          </button>
+          <button id="open-add-movie" class="add-movie-button" type="button">
+            <span aria-hidden="true">+</span><span class="add-movie-label">Add title</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="hero" id="top">
+        <div id="hero-art" class="hero-art"></div>
+        <div class="hero-vignette"></div>
+        <div class="hero-content">
+          <p class="eyebrow"><span class="eyebrow-mark">V</span><span id="hero-eyebrow">YOUR LIBRARY</span></p>
+          <h1 id="hero-title">YOUR<br /><span>LIBRARY</span></h1>
+          <div id="hero-meta" class="hero-meta" hidden></div>
+          <p id="hero-description" class="hero-description">Add a movie or show to start building your own Vora library.</p>
+          <div class="hero-actions">
+            <button id="hero-action" class="button button-light" type="button">
+              <span aria-hidden="true">＋</span><span id="hero-action-label">Add your first title</span>
+            </button>
+          </div>
+        </div>
+        <div class="hero-side-note"><span class="side-note-line"></span><span>Saved in this browser</span></div>
+        <div class="hero-bottom-fade"></div>
+      </section>
+
+      <main class="content-area">
+        <section id="library-empty" class="empty-state">
+          <div class="empty-state-mark" aria-hidden="true">▶</div>
+          <div>
+            <p class="section-kicker">Your library</p>
+            <h2>Nothing here yet</h2>
+            <p>Add a movie or show with a watch link and a banner image. It will appear on shelves by genre.</p>
+          </div>
+          <button class="button button-light" type="button" data-open-add>Add a title</button>
+        </section>
+        <p id="no-search-results" class="no-search-results" hidden>No titles match your search.</p>
+
+        <section id="movies-shelf" class="shelf" hidden>
+          <div class="shelf-heading">
+            <div>
+              <p class="section-kicker">Your collection</p>
+              <h2>Movies <span class="heading-arrow" aria-hidden="true">›</span></h2>
+            </div>
+            <div class="shelf-controls">
+              <button type="button" class="carousel-button" data-direction="-1" data-target="movies-row" aria-label="Scroll movies left">‹</button>
+              <button type="button" class="carousel-button" data-direction="1" data-target="movies-row" aria-label="Scroll movies right">›</button>
+            </div>
+          </div>
+          <div id="movies-row" class="card-row"></div>
+        </section>
+
+        <section id="shows-shelf" class="shelf" hidden>
+          <div class="shelf-heading">
+            <div>
+              <p class="section-kicker">Your collection</p>
+              <h2>Shows <span class="heading-arrow" aria-hidden="true">›</span></h2>
+            </div>
+            <div class="shelf-controls">
+              <button type="button" class="carousel-button" data-direction="-1" data-target="shows-row" aria-label="Scroll shows left">‹</button>
+              <button type="button" class="carousel-button" data-direction="1" data-target="shows-row" aria-label="Scroll shows right">›</button>
+            </div>
+          </div>
+          <div id="shows-row" class="card-row"></div>
+        </section>
+
+        <div id="genre-shelves"></div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-brand">VORA</div>
+        <p>Your stories, your screen.</p>
+        <span class="copyright">Titles are kept in this browser. <span id="library-count"></span></span>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Title details (must stay before the add dialog: it owns the first .dialog-close) -->
+    <dialog id="title-dialog" class="title-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-art">
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="dialog-content">
+        <h2 id="dialog-title"></h2>
+        <div id="dialog-meta" class="dialog-meta"></div>
+        <button id="dialog-watch" class="dialog-watch" type="button"></button>
+        <div class="dialog-actions">
+          <button id="toggle-add-episode" class="add-episode-button" type="button" hidden>+ Add episode</button>
+          <button id="dialog-remove" class="remove-title-button" type="button">Remove from library</button>
+        </div>
+        <div id="remove-confirm" class="remove-confirm" role="alertdialog" aria-labelledby="remove-confirm-text" hidden>
+          <p id="remove-confirm-text"></p>
+          <button id="confirm-remove" class="danger-button" type="button">Yes, remove</button>
+          <button id="cancel-remove" class="cancel-button" type="button">Keep it</button>
+          <p id="remove-error" class="form-error remove-error" role="alert"></p>
+        </div>
+        <form id="dialog-episode-form" class="episode-form-card dialog-episode-form" novalidate hidden>
+          <div class="episode-form-card-heading">
+            <strong>New episode</strong>
+          </div>
+          <div class="episode-number-fields">
+            <label class="episode-input-label">Season
+              <input id="dialog-episode-season" class="form-control" type="number" min="1" max="999" value="1" required />
+            </label>
+            <label class="episode-input-label">Episode number
+              <input id="dialog-episode-index" class="form-control" type="number" min="1" max="999" value="1" required />
+            </label>
+          </div>
+          <label class="episode-input-label">Episode title
+            <input id="dialog-episode-title" class="form-control" type="text" placeholder="e.g. The first night" required />
+          </label>
+          <label class="episode-input-label">Episode watch link
+            <input id="dialog-episode-link" class="form-control" type="text" placeholder="https://example.com/video-or-page, or a local file name" required />
+          </label>
+          <p id="dialog-episode-error" class="form-error" role="alert"></p>
+          <div class="form-actions">
+            <button id="cancel-dialog-episode" class="cancel-button" type="button">Cancel</button>
+            <button id="submit-dialog-episode" class="button submit-movie-button" type="submit">Add episode</button>
+          </div>
+        </form>
+        <p id="dialog-description" class="dialog-description"></p>
+        <div id="season-bar" class="season-bar" hidden>
+          <select id="season-select" aria-label="Season"></select>
+          <span id="episode-count-note" class="episode-count-note"></span>
+        </div>
+        <div id="episode-list" class="episode-list" hidden></div>
+      </div>
+    </dialog>
+
+    <!-- Add title -->
+    <dialog id="add-movie-dialog" class="add-dialog" aria-labelledby="add-dialog-title">
+      <div class="add-dialog-heading">
+        <div>
+          <p class="dialog-kicker">YOUR LIBRARY</p>
+          <h2 id="add-dialog-title">Add a title</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form id="movie-form" novalidate>
+        <fieldset class="type-picker">
+          <legend class="field-label">Type</legend>
+          <label><input type="radio" name="titleType" value="movie" checked /><span>Movie</span></label>
+          <label><input type="radio" name="titleType" value="show" /><span>Show</span></label>
+        </fieldset>
+
+        <label class="field-label" for="movie-name">Title</label>
+        <input id="movie-name" class="form-control" type="text" maxlength="120" placeholder="e.g. Midnight Harbor" required autocomplete="off" />
+
+        <div class="form-row genre-row">
+          <div class="form-field">
+            <label class="field-label" for="movie-genre">Genre</label>
+            <select id="movie-genre" class="form-control" required>
+              <option value="">Choose a genre</option>
+              <option>Action</option><option>Adventure</option><option>Animation</option>
+              <option>Comedy</option><option>Crime</option><option>Documentary</option>
+              <option>Drama</option><option>Family</option><option>Fantasy</option>
+              <option>Horror</option><option>Mystery</option><option>Romance</option>
+              <option>Sci-Fi</option><option>Thriller</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="movie-genre-two">Second genre <span>(optional)</span></label>
+            <select id="movie-genre-two" class="form-control">
+              <option value="">None</option>
+              <option>Action</option><option>Adventure</option><option>Animation</option>
+              <option>Comedy</option><option>Crime</option><option>Documentary</option>
+              <option>Drama</option><option>Family</option><option>Fantasy</option>
+              <option>Horror</option><option>Mystery</option><option>Romance</option>
+              <option>Sci-Fi</option><option>Thriller</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <p class="field-hint genre-hint">The title appears on a shelf for each genre you pick.</p>
+
+        <label class="field-label" for="movie-description">Description <span>(optional)</span></label>
+        <textarea id="movie-description" class="form-control description-input" maxlength="600" placeholder="A short synopsis"></textarea>
+
+        <label class="field-label" for="movie-banner-file">Banner image</label>
+        <label class="upload-control">
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <span><strong>Upload an image</strong><small id="upload-file-name">JPG, PNG, or WebP · max 8 MB</small></span>
+          <input id="movie-banner-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+        </label>
+        <label class="field-label" for="movie-banner-url">Or paste an image URL</label>
+        <input id="movie-banner-url" class="form-control" type="url" placeholder="https://…" autocomplete="off" />
+        <div id="banner-preview" class="banner-preview" hidden>
+          <img id="banner-preview-image" alt="Banner preview" />
+          <button id="remove-banner" type="button" aria-label="Remove banner image">×</button>
+        </div>
+
+        <div id="movie-drive-field">
+          <label class="field-label" for="movie-drive-link">Watch link</label>
+          <input id="movie-drive-link" class="form-control" type="text" placeholder="https://example.com/video-or-page, or a local file name" autocomplete="off" required />
+          <p class="field-hint">Paste any public http:// or https:// link that should open when the title is watched.</p>
+        </div>
+
+        <div id="episodes-section" class="episode-form-section" hidden>
+          <div class="episode-form-heading">
+            <div>
+              <span class="field-label">Episodes</span>
+              <p class="field-hint">Each episode needs a season, number, title, and watch link.</p>
+            </div>
+            <button id="add-episode" class="add-episode-button" type="button">+ Add episode</button>
+          </div>
+          <div id="episode-form-list"></div>
+        </div>
+
+        <p id="form-error" class="form-error" role="alert"></p>
+        <div class="form-actions">
+          <button id="cancel-add-movie" class="cancel-button" type="button">Cancel</button>
+          <button id="submit-movie" class="button submit-movie-button" type="submit">Add movie <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="webdav-dialog" class="add-dialog" aria-labelledby="webdav-dialog-title">
+      <div class="add-dialog-heading">
+        <div>
+          <p class="dialog-kicker">YOUR LIBRARY</p>
+          <h2 id="webdav-dialog-title">Connect WebDAV</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form id="webdav-form" novalidate>
+        <label class="field-label" for="webdav-url">Server URL</label>
+        <input id="webdav-url" class="form-control" type="text" placeholder="http://192.168.31.249:8080/" autocomplete="off" required />
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="webdav-username">Username <span>(optional)</span></label>
+            <input id="webdav-username" class="form-control" type="text" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="webdav-password">Password <span>(optional)</span></label>
+            <input id="webdav-password" class="form-control" type="password" autocomplete="off" />
+          </div>
+        </div>
+
+        <label class="field-label" for="webdav-root">Folder to scan <span>(optional)</span></label>
+        <input id="webdav-root" class="form-control" type="text" placeholder="/" autocomplete="off" />
+
+        <p class="field-hint">
+          Works with or without folders. A file whose name contains something like "S01E02" or "1x02" (e.g. "Young Sheldon S01E02.mp4") is read as an episode — everything before that part becomes the show's title, and episodes with the same title are grouped into one show. A file with no such pattern is imported as a movie. Folders also work if you have them: each subfolder becomes a show (named after the folder), with video files inside — optionally organized into "Season 1", "Season 2", … — as its episodes.
+        </p>
+        <p class="field-hint">
+          Titles play from this server's address plus each file's path. Genre, banner, and description are auto-filled from TMDB when a key is set.
+        </p>
+        <p class="field-hint">
+          The username and password are stored only in this browser (not encrypted) so Vora can reconnect without asking again — skip them if your server doesn't need login, and avoid reusing an important password here.
+        </p>
+
+        <p id="webdav-status" class="field-hint" hidden></p>
+        <p id="webdav-error" class="form-error" role="alert"></p>
+        <div class="form-actions">
+          <button id="cancel-webdav" class="cancel-button" type="button">Cancel</button>
+          <button id="submit-webdav" class="button submit-movie-button" type="submit">Connect &amp; scan <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="application/json" id="vora-data">{"app":"vora","version":1,"savedAt":"","titles":[]}</script>
+    <script>
+// Snapshot of the untouched page, used to build the "Export library" download.
+const pristineHTML = "<!doctype html>\n" + document.documentElement.outerHTML;
+const SNAPSHOT_KEY = "vora-imported-snapshots";
+const DB_NAME = "vora-library";
+const STORE_NAME = "titles";
+
+let titleDB;
+let customTitles = [];
+let featuredTitle = null;
+let toastTimer;
+let previewObjectUrl = "";
+let dialogItem = null;
+let savedSignature = "";
+
+const dialog = document.querySelector("#title-dialog");
+const addDialog = document.querySelector("#add-movie-dialog");
+const webdavDialog = document.querySelector("#webdav-dialog");
+const webdavForm = document.querySelector("#webdav-form");
+const webdavUrlInput = document.querySelector("#webdav-url");
+const webdavUsernameInput = document.querySelector("#webdav-username");
+const webdavPasswordInput = document.querySelector("#webdav-password");
+const webdavRootInput = document.querySelector("#webdav-root");
+const webdavStatus = document.querySelector("#webdav-status");
+const webdavError = document.querySelector("#webdav-error");
+const submitWebdavButton = document.querySelector("#submit-webdav");
+const movieForm = document.querySelector("#movie-form");
+const episodeFormList = document.querySelector("#episode-form-list");
+const movieDriveInput = document.querySelector("#movie-drive-link");
+const bannerFileInput = document.querySelector("#movie-banner-file");
+const bannerUrlInput = document.querySelector("#movie-banner-url");
+const bannerPreview = document.querySelector("#banner-preview");
+const bannerPreviewImage = document.querySelector("#banner-preview-image");
+const formError = document.querySelector("#form-error");
+const searchInput = document.querySelector("#search-input");
+const saveButton = document.querySelector("#save-library");
+const tmdbSettingsButton = document.querySelector("#open-tmdb-settings");
+const removeButton = document.querySelector("#dialog-remove");
+const removeConfirm = document.querySelector("#remove-confirm");
+const removeConfirmText = document.querySelector("#remove-confirm-text");
+const removeError = document.querySelector("#remove-error");
+const confirmRemoveButton = document.querySelector("#confirm-remove");
+const cancelRemoveButton = document.querySelector("#cancel-remove");
+const toggleAddEpisodeButton = document.querySelector("#toggle-add-episode");
+const dialogEpisodeForm = document.querySelector("#dialog-episode-form");
+const dialogEpisodeError = document.querySelector("#dialog-episode-error");
+
+function showToast(message) {
+  const toast = document.querySelector("#toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+}
+
+function slug(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function createId() {
+  return (
+    window.crypto?.randomUUID?.() ||
+    `vora-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
+}
+
+// ---------------------------------------------------------------------
+// Local file resolution
+//
+// A "watch" value can be a normal http(s) link, OR a bare file name/path
+// on a local media server (e.g. "/Over the Garden Wall.mp4"), for people
+// who serve their own files and whose server's IP changes with the
+// network. Bare file names are stored exactly as typed — never turned
+// into a full link at import or save time — and are only combined with
+// the saved server address at the moment a title is actually played, via
+// resolveWatchUrl(). That's what lets a single settings update (the 🌐
+// Server button) fix every such title at once after the IP changes,
+// instead of needing a fresh CSV import.
+// ---------------------------------------------------------------------
+
+const SERVER_ADDRESS_STORAGE = "vora-server-address";
+
+function getServerAddress() {
+  try {
+    return (localStorage.getItem(SERVER_ADDRESS_STORAGE) || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function setServerAddress(address) {
+  try {
+    if (address) localStorage.setItem(SERVER_ADDRESS_STORAGE, address);
+    else localStorage.removeItem(SERVER_ADDRESS_STORAGE);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+// Accepts "192.168.1.5:8080" as well as "http://192.168.1.5:8080/" and
+// settles on one consistent form: a scheme, no trailing slash.
+function normalizeServerAddress(raw) {
+  let value = String(raw || "").trim();
+  if (!value) return "";
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) value = `http://${value}`;
+  return value.replace(/\/+$/, "");
+}
+
+// A value "is a local path" when it has no URL scheme (no "http://",
+// "https://", etc.) — i.e. it's just a file name or a path to one.
+function isLocalMediaPath(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return false;
+  return !/^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed);
+}
+
+// Percent-encodes a plain file path's segments (spaces, "&", "'", etc.)
+// so it's a valid URL — but leaves a path alone if it looks already
+// encoded (contains a "%XX" sequence), to avoid double-encoding.
+function encodeLocalPathForUrl(path) {
+  if (/%[0-9a-f]{2}/i.test(path)) return path;
+  return path
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+// Turns a stored watch value into something actually playable right now:
+// a full link is returned as-is; a bare local path is combined with
+// whatever server address is currently saved.
+function resolveWatchUrl(raw) {
+  const trimmed = String(raw || "").trim();
+  if (!trimmed) return "";
+  if (!isLocalMediaPath(trimmed)) return trimmed;
+  const server = getServerAddress();
+  if (!server) {
+    showToast("Connect your WebDAV server to play local files.");
+    return "";
+  }
+  const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${server}${encodeLocalPathForUrl(path)}`;
+}
+
+function mediaLinkUrl(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) {
+    throw new Error("Enter a watch link or a local file name.");
+  }
+  if (isLocalMediaPath(trimmed)) {
+    // Not a full link — kept as typed and resolved against the saved
+    // server address when the title is played (see resolveWatchUrl).
+    return trimmed;
+  }
+  let url;
+  try {
+    url = new URL(trimmed);
+  } catch {
+    throw new Error("Enter a valid http:// or https:// link, or a local file name.");
+  }
+  if (!["http:", "https:"].includes(url.protocol)) {
+    throw new Error("Use an http:// or https:// link.");
+  }
+  return url.href;
+}
+
+function openMediaLink(url) {
+  if (!url) {
+    showToast("This title does not have a watch link yet.");
+    return;
+  }
+
+  // Prefer a new tab/window when the APK wrapper supports it.
+  const opened = window.open(url, "_blank", "noopener,noreferrer");
+
+  // Some Android WebViews block window.open. In that case, fall back to
+  // navigating the current WebView instead of doing nothing.
+  if (!opened) {
+    window.location.href = url;
+  }
+}
+
+function cardSearchText(item) {
+  const episodeText = (item.episodes || [])
+    .map((episode) => episode.title)
+    .join(" ");
+  return `${item.title} ${item.type} ${(item.genres || []).join(" ")} ${item.description} ${episodeText}`.toLowerCase();
+}
+
+function createCard(item) {
+  const card = document.createElement("article");
+  card.className = "title-card";
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute(
+    "aria-label",
+    `${item.title}, ${item.genres.join(" and ")}. Open details.`,
+  );
+  card.dataset.search = cardSearchText(item);
+
+  const image = document.createElement("div");
+  image.className = "card-image";
+  image.style.backgroundImage = `url("${item.banner}")`;
+  image.setAttribute("aria-hidden", "true");
+
+  const type = document.createElement("span");
+  type.className = "card-rating";
+  type.textContent = item.type === "show" ? "SERIES" : "MOVIE";
+
+  const copy = document.createElement("span");
+  copy.className = "card-copy";
+  for (const [className, text] of [
+    ["card-tag", item.genres.join(" · ")],
+    ["card-title", item.title],
+    [
+      "card-year",
+      item.type === "show"
+        ? `${item.episodes.length} episode${item.episodes.length === 1 ? "" : "s"}`
+        : "Movie",
+    ],
+  ]) {
+    const line = document.createElement("span");
+    line.className = className;
+    line.textContent = text;
+    copy.append(line);
+  }
+
+  card.append(image, type, copy);
+  card.addEventListener("click", () => openTitleDialog(item));
+  card.addEventListener("keydown", (event) => {
+    if (event.target === card && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      openTitleDialog(item);
+    }
+  });
+  return card;
+}
+
+function renderGenreShelves() {
+  const root = document.querySelector("#genre-shelves");
+  const groups = new Map();
+  for (const item of customTitles) {
+    for (const genre of item.genres) {
+      if (!groups.has(genre)) groups.set(genre, []);
+      groups.get(genre).push(item);
+    }
+  }
+
+  root.replaceChildren(
+    ...[...groups.entries()].map(([genre, items]) => {
+      const shelf = document.createElement("section");
+      shelf.className = "shelf user-genre-shelf";
+      shelf.id = `genre-${slug(genre)}`;
+
+      const heading = document.createElement("div");
+      heading.className = "shelf-heading";
+      const headingText = document.createElement("div");
+      const kicker = document.createElement("p");
+      kicker.className = "section-kicker";
+      kicker.textContent = "Your collection";
+      const title = document.createElement("h2");
+      title.textContent = `${genre} on Vora`;
+      headingText.append(kicker, title);
+
+      const controls = document.createElement("div");
+      controls.className = "shelf-controls";
+      const rowId = `${shelf.id}-row`;
+      for (const [direction, symbol, side] of [
+        [-1, "‹", "left"],
+        [1, "›", "right"],
+      ]) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "carousel-button";
+        button.dataset.direction = String(direction);
+        button.dataset.target = rowId;
+        button.setAttribute("aria-label", `Scroll ${genre} titles ${side}`);
+        button.textContent = symbol;
+        controls.append(button);
+      }
+      heading.append(headingText, controls);
+
+      const row = document.createElement("div");
+      row.className = "card-row";
+      row.id = rowId;
+      row.append(...items.map(createCard));
+      shelf.append(heading, row);
+      return shelf;
+    }),
+  );
+}
+
+function renderHero() {
+  const title = document.querySelector("#hero-title");
+  const eyebrow = document.querySelector("#hero-eyebrow");
+  const description = document.querySelector("#hero-description");
+  const meta = document.querySelector("#hero-meta");
+  const actionLabel = document.querySelector("#hero-action-label");
+  const art = document.querySelector("#hero-art");
+  const action = document.querySelector("#hero-action");
+  featuredTitle = customTitles[0] || null;
+
+  if (!featuredTitle) {
+    title.classList.remove("featured-title");
+    title.innerHTML = "YOUR<br /><span>LIBRARY</span>";
+    eyebrow.textContent = "YOUR LIBRARY";
+    description.textContent =
+      "Add a movie or show to start building your own Vora library.";
+    meta.hidden = true;
+    meta.textContent = "";
+    actionLabel.textContent = "Add your first title";
+    action.querySelector("[aria-hidden='true']").textContent = "＋";
+    art.style.backgroundImage = "";
+    return;
+  }
+
+  title.classList.add("featured-title");
+  title.textContent = featuredTitle.title;
+  eyebrow.textContent = `YOUR ${featuredTitle.type === "show" ? "SERIES" : "MOVIE"}`;
+  description.textContent = featuredTitle.description;
+  meta.hidden = false;
+  meta.textContent = `${featuredTitle.type === "show" ? "Series" : "Movie"}  ·  ${featuredTitle.genres.join(" / ")}`;
+  actionLabel.textContent =
+    featuredTitle.type === "show" ? "Choose an episode" : "Watch";
+  action.querySelector("[aria-hidden='true']").textContent =
+    featuredTitle.type === "show" ? "▶" : "↗";
+  art.style.backgroundImage = `url("${featuredTitle.banner}")`;
+}
+
+function applySearch() {
+  const query = searchInput.value.trim().toLowerCase();
+  let matches = 0;
+  document.querySelectorAll(".title-card").forEach((card) => {
+    const match = !query || card.dataset.search.includes(query);
+    card.hidden = !match;
+    if (match) matches++;
+  });
+  document.querySelectorAll(".shelf").forEach((shelf) => {
+    const visibleCard = [...shelf.querySelectorAll(".title-card")].some(
+      (card) => !card.hidden,
+    );
+    shelf.hidden = !visibleCard;
+  });
+  document.querySelector("#library-empty").hidden =
+    customTitles.length > 0 || !!query;
+  document.querySelector("#no-search-results").hidden = !query || matches > 0;
+}
+
+function renderShelves() {
+  const movies = customTitles.filter((item) => item.type === "movie");
+  const shows = customTitles.filter((item) => item.type === "show");
+  document
+    .querySelector("#movies-row")
+    .replaceChildren(...movies.map(createCard));
+  document
+    .querySelector("#shows-row")
+    .replaceChildren(...shows.map(createCard));
+  document.querySelector("#movies-shelf").hidden = movies.length === 0;
+  document.querySelector("#shows-shelf").hidden = shows.length === 0;
+  document.querySelector("#library-count").textContent =
+    `· ${movies.length} movie${movies.length === 1 ? "" : "s"} · ${shows.length} show${shows.length === 1 ? "" : "s"}`;
+  renderGenreShelves();
+  renderHero();
+  applySearch();
+  updateSaveState();
+}
+
+function sortEpisodes(episodes) {
+  return [...episodes].sort(
+    (a, b) => a.season - b.season || a.episode - b.episode,
+  );
+}
+
+function makeEpisodeButton(episode, item) {
+  const card = document.createElement("div");
+  card.className = "episode-card";
+  const play = document.createElement("button");
+  play.type = "button";
+  play.className = "episode-card-watch";
+  const thumb = document.createElement("span");
+  thumb.className = "episode-thumb";
+  const thumbImage = episode.still || item.banner;
+  if (thumbImage) thumb.style.backgroundImage = `url("${thumbImage}")`;
+  thumb.textContent = "▶";
+  const label = document.createElement("span");
+  label.className = "episode-label";
+  label.textContent = `${episode.episode}. ${episode.title}`;
+  play.append(thumb, label);
+  play.addEventListener("click", () => openMediaLink(resolveWatchUrl(episode.driveUrl)));
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "episode-remove";
+  remove.setAttribute("aria-label", `Remove episode “${episode.title}”`);
+  remove.textContent = "×";
+  remove.addEventListener("click", (event) => {
+    event.stopPropagation();
+    removeEpisode(item, episode);
+  });
+  card.append(play, remove);
+  return card;
+}
+
+function resetRemoveConfirm() {
+  removeConfirm.hidden = true;
+  removeButton.hidden = false;
+  removeError.textContent = "";
+  confirmRemoveButton.disabled = false;
+  confirmRemoveButton.textContent = "Yes, remove";
+}
+
+function refreshEpisodeList(item) {
+  const select = document.querySelector("#season-select");
+  item.episodes = sortEpisodes(item.episodes);
+  const seasons = [...new Set(item.episodes.map((e) => e.season))];
+  const keep = Number(select.value);
+  select.replaceChildren(...seasons.map((n) => new Option(`Season ${n}`, n)));
+  select.value = seasons.includes(keep) ? keep : (seasons[0] ?? "");
+  document.querySelector("#episode-count-note").textContent =
+    `${item.episodes.length} episode${item.episodes.length === 1 ? "" : "s"}`;
+  document.querySelector("#season-bar").hidden = !seasons.length;
+  document.querySelector("#episode-list").replaceChildren(
+    ...item.episodes
+      .filter((e) => e.season === Number(select.value))
+      .map((e) => makeEpisodeButton(e, item)),
+  );
+  const first = item.episodes[0];
+  const watchButton = document.querySelector("#dialog-watch");
+  watchButton.hidden = !first;
+  if (first) {
+    watchButton.textContent = `▶  PLAY S${first.season} · E${first.episode}`;
+    watchButton.onclick = () => openMediaLink(resolveWatchUrl(first.driveUrl));
+  }
+}
+
+async function removeEpisode(item, episode) {
+  const confirmed = window.confirm(
+    `Remove “${episode.title}” from ${item.title}? This can’t be undone.`,
+  );
+  if (!confirmed) return;
+  const previousEpisodes = item.episodes;
+  item.episodes = item.episodes.filter((entry) => entry !== episode);
+  try {
+    await saveRecord(item);
+  } catch (error) {
+    item.episodes = previousEpisodes;
+    showToast(error.message || "Could not remove that episode.");
+    return;
+  }
+  refreshEpisodeList(item);
+  renderShelves();
+  showToast(`Removed “${episode.title}”`);
+}
+
+function renderDialogMeta(item) {
+  const parts = [];
+  if (item.rating) parts.push(["★ " + item.rating, "star"]);
+  if (item.year) parts.push([item.year]);
+  parts.push([[item.type === "show" ? "Series" : "Movie", ...item.genres].join(" · ")]);
+  if (item.cert) parts.push([item.cert, "age-badge"]);
+  document.querySelector("#dialog-meta").replaceChildren(
+    ...parts.map(([text, cls]) => {
+      const span = document.createElement("span");
+      span.textContent = text;
+      if (cls) span.className = cls;
+      return span;
+    }),
+  );
+}
+
+// Fetches rating, year, age rating and (for shows) episode names + stills
+// from TMDB the first time a title is opened, then saves them on the title.
+async function loadTmdbDetails(item) {
+  const key = getTmdbKey();
+  if (!key || item.detailsAt) return;
+  const api = (path, params = "") =>
+    fetch(`https://api.themoviedb.org/3/${path}?api_key=${encodeURIComponent(key)}${params}`).then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    });
+  try {
+    const kind = item.type === "show" ? "tv" : "movie";
+    const found = (await api(`search/${kind}`, `&query=${encodeURIComponent(item.title)}&include_adult=false`)).results?.[0];
+    if (!found) return;
+    const detail = await api(`${kind}/${found.id}`, `&append_to_response=${kind === "tv" ? "content_ratings" : "release_dates"}`);
+    item.rating = detail.vote_average ? detail.vote_average.toFixed(1) : "";
+    item.year = (detail.release_date || detail.first_air_date || "").slice(0, 4);
+    const list = (kind === "tv" ? detail.content_ratings : detail.release_dates)?.results || [];
+    const us = list.find((r) => r.iso_3166_1 === "US");
+    item.cert = kind === "tv"
+      ? us?.rating || ""
+      : us?.release_dates?.find((r) => r.certification)?.certification || "";
+    if (kind === "tv") {
+      const generic = /^(season \d+, episode \d+|episode)$/i;
+      for (const n of new Set(item.episodes.map((e) => e.season))) {
+        const season = await api(`tv/${found.id}/season/${n}`).catch(() => null);
+        for (const tmdbEpisode of season?.episodes || []) {
+          const mine = item.episodes.find((e) => e.season === n && e.episode === tmdbEpisode.episode_number);
+          if (!mine) continue;
+          if (tmdbEpisode.name && (!mine.title || generic.test(mine.title.trim()))) mine.title = tmdbEpisode.name;
+          if (tmdbEpisode.still_path) mine.still = `https://image.tmdb.org/t/p/w500${tmdbEpisode.still_path}`;
+        }
+      }
+    }
+    item.detailsAt = Date.now();
+    await saveRecord(item);
+    if (dialogItem === item) {
+      renderDialogMeta(item);
+      if (item.type === "show") refreshEpisodeList(item);
+    }
+  } catch (error) {
+    console.warn("TMDB details failed:", error);
+  }
+}
+
+function openTitleDialog(item) {
+  dialogItem = item;
+  resetRemoveConfirm();
+  closeDialogEpisodeForm();
+  const episodeList = document.querySelector("#episode-list");
+  const watchButton = document.querySelector("#dialog-watch");
+
+  dialog.querySelector(".dialog-art").style.backgroundImage = item.banner ? `url("${item.banner}")` : "none";
+  document.querySelector("#dialog-title").textContent = item.title;
+  renderDialogMeta(item);
+  document.querySelector("#dialog-description").textContent = item.description;
+
+  if (item.type === "show") {
+    toggleAddEpisodeButton.hidden = false;
+    episodeList.hidden = false;
+    document.querySelector("#season-select").replaceChildren();
+    refreshEpisodeList(item);
+  } else {
+    watchButton.hidden = false;
+    watchButton.textContent = "▶  PLAY";
+    watchButton.onclick = () => openMediaLink(resolveWatchUrl(item.driveUrl));
+    toggleAddEpisodeButton.hidden = true;
+    document.querySelector("#season-bar").hidden = true;
+    episodeList.hidden = true;
+    episodeList.replaceChildren();
+  }
+  dialog.scrollTop = 0;
+  dialog.showModal();
+  loadTmdbDetails(item);
+}
+
+document.querySelector("#season-select").addEventListener("change", () => {
+  if (dialogItem) refreshEpisodeList(dialogItem);
+});
+
+function openAddDialog() {
+  movieForm.reset();
+  formError.textContent = "";
+  clearBannerPreview();
+  episodeFormList.replaceChildren();
+  addEpisodeRow();
+  updateTypeFields();
+  addDialog.showModal();
+  document.querySelector("#movie-name").focus();
+}
+
+document
+  .querySelector("#open-add-movie")
+  .addEventListener("click", openAddDialog);
+document
+  .querySelectorAll("[data-open-add]")
+  .forEach((button) => button.addEventListener("click", openAddDialog));
+document
+  .querySelector("#cancel-add-movie")
+  .addEventListener("click", () => addDialog.close());
+addDialog
+  .querySelector(".dialog-close")
+  .addEventListener("click", () => addDialog.close());
+addDialog.addEventListener("click", (event) => {
+  if (event.target === addDialog) addDialog.close();
+});
+
+document.querySelector("#open-webdav").addEventListener("click", () => {
+  webdavError.textContent = "";
+  webdavStatus.hidden = true;
+  webdavStatus.textContent = "";
+  const config = loadWebdavConfig();
+  if (config) {
+    webdavUrlInput.value = config.url || "";
+    webdavUsernameInput.value = config.username || "";
+    webdavPasswordInput.value = config.password || "";
+    webdavRootInput.value = config.root || "";
+  }
+  webdavDialog.showModal();
+  webdavUrlInput.focus();
+});
+webdavDialog
+  .querySelector(".dialog-close")
+  .addEventListener("click", () => webdavDialog.close());
+document
+  .querySelector("#cancel-webdav")
+  .addEventListener("click", () => webdavDialog.close());
+webdavDialog.addEventListener("click", (event) => {
+  if (event.target === webdavDialog) webdavDialog.close();
+});
+dialog
+  .querySelector(".dialog-close")
+  .addEventListener("click", () => dialog.close());
+dialog.addEventListener("click", (event) => {
+  if (event.target === dialog) dialog.close();
+});
+dialog.addEventListener("close", () => {
+  dialogItem = null;
+  resetRemoveConfirm();
+  closeDialogEpisodeForm();
+});
+
+removeButton.addEventListener("click", () => {
+  if (!dialogItem) return;
+  removeConfirmText.textContent = `Remove “${dialogItem.title}” from your library? This can’t be undone.`;
+  removeButton.hidden = true;
+  removeConfirm.hidden = false;
+  cancelRemoveButton.focus();
+});
+
+cancelRemoveButton.addEventListener("click", () => {
+  resetRemoveConfirm();
+  removeButton.focus();
+});
+
+confirmRemoveButton.addEventListener("click", async () => {
+  if (!dialogItem) return;
+  const item = dialogItem;
+  removeError.textContent = "";
+  confirmRemoveButton.disabled = true;
+  confirmRemoveButton.textContent = "Removing…";
+  try {
+    await deleteRecord(item.id);
+    customTitles = customTitles.filter((entry) => entry.id !== item.id);
+    dialog.close();
+    renderShelves();
+    showToast(`Removed “${item.title}” from Vora`);
+  } catch (error) {
+    confirmRemoveButton.disabled = false;
+    confirmRemoveButton.textContent = "Try again";
+    removeError.textContent = error.message || "This title could not be removed.";
+  }
+});
+
+function closeDialogEpisodeForm() {
+  dialogEpisodeForm.hidden = true;
+  dialogEpisodeForm.reset();
+  dialogEpisodeError.textContent = "";
+}
+
+toggleAddEpisodeButton.addEventListener("click", () => {
+  if (!dialogItem) return;
+  dialogEpisodeError.textContent = "";
+  const lastEpisode = dialogItem.episodes[dialogItem.episodes.length - 1];
+  const nextSeason = lastEpisode ? lastEpisode.season : 1;
+  const seasonEpisodes = dialogItem.episodes.filter(
+    (entry) => entry.season === nextSeason,
+  );
+  const nextNumber = seasonEpisodes.length
+    ? Math.max(...seasonEpisodes.map((entry) => entry.episode)) + 1
+    : 1;
+  document.querySelector("#dialog-episode-season").value = nextSeason;
+  document.querySelector("#dialog-episode-index").value = nextNumber;
+  document.querySelector("#dialog-episode-title").value = "";
+  document.querySelector("#dialog-episode-link").value = "";
+  dialogEpisodeForm.hidden = false;
+  document.querySelector("#dialog-episode-title").focus();
+});
+
+document.querySelector("#cancel-dialog-episode").addEventListener("click", () => {
+  closeDialogEpisodeForm();
+});
+
+dialogEpisodeForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!dialogItem) return;
+  dialogEpisodeError.textContent = "";
+  if (!dialogEpisodeForm.reportValidity()) return;
+
+  const submitButton = document.querySelector("#submit-dialog-episode");
+  submitButton.disabled = true;
+  submitButton.textContent = "Adding…";
+  try {
+    const season = Number(document.querySelector("#dialog-episode-season").value);
+    const episodeNumber = Number(
+      document.querySelector("#dialog-episode-index").value,
+    );
+    const title = document.querySelector("#dialog-episode-title").value.trim();
+    if (!title) throw new Error("Give the episode a title.");
+    const driveUrl = mediaLinkUrl(
+      document.querySelector("#dialog-episode-link").value.trim(),
+    );
+    if (
+      dialogItem.episodes.some(
+        (entry) => entry.season === season && entry.episode === episodeNumber,
+      )
+    ) {
+      throw new Error(`Season ${season}, Episode ${episodeNumber} already exists.`);
+    }
+
+    const newEpisode = { season, episode: episodeNumber, title, driveUrl };
+    const previousEpisodes = dialogItem.episodes;
+    dialogItem.episodes = sortEpisodes([...dialogItem.episodes, newEpisode]);
+    try {
+      await saveRecord(dialogItem);
+    } catch (error) {
+      dialogItem.episodes = previousEpisodes;
+      throw error;
+    }
+
+    refreshEpisodeList(dialogItem);
+    renderShelves();
+    closeDialogEpisodeForm();
+    showToast(`Added “${title}”`);
+  } catch (error) {
+    dialogEpisodeError.textContent =
+      error.message || "Could not add that episode.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Add episode";
+  }
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-direction]");
+  if (!button) return;
+  const row = document.getElementById(button.dataset.target);
+  if (row)
+    row.scrollBy({
+      left: row.clientWidth * Number(button.dataset.direction) * 0.82,
+      behavior: "smooth",
+    });
+});
+
+document.querySelector("#hero-action").addEventListener("click", () => {
+  if (!featuredTitle) {
+    openAddDialog();
+  } else if (featuredTitle.type === "show") {
+    openTitleDialog(featuredTitle);
+  } else {
+    openMediaLink(resolveWatchUrl(featuredTitle.driveUrl));
+  }
+});
+
+document.querySelector("#search-toggle").addEventListener("click", () => {
+  const box = document.querySelector("#search-form");
+  box.classList.toggle("open");
+  if (box.classList.contains("open")) {
+    searchInput.focus();
+  } else {
+    searchInput.value = "";
+    applySearch();
+  }
+});
+document
+  .querySelector("#search-form")
+  .addEventListener("submit", (event) => event.preventDefault());
+searchInput.addEventListener("input", applySearch);
+
+function updateTypeFields() {
+  const type = movieForm.querySelector('input[name="titleType"]:checked').value;
+  const isShow = type === "show";
+  document.querySelector("#movie-drive-field").hidden = isShow;
+  movieDriveInput.required = !isShow;
+  document.querySelector("#episodes-section").hidden = !isShow;
+  episodeFormList.querySelectorAll("input").forEach((input) => {
+    input.disabled = !isShow;
+  });
+  document.querySelector("#submit-movie").innerHTML =
+    `${isShow ? "Add show" : "Add movie"} <span aria-hidden="true">↗</span>`;
+}
+
+movieForm.querySelectorAll('input[name="titleType"]').forEach((radio) => {
+  radio.addEventListener("change", updateTypeFields);
+});
+
+function createEpisodeField(labelText, className, type, value, placeholder) {
+  const label = document.createElement("label");
+  label.className = "episode-input-label";
+  label.append(document.createTextNode(labelText));
+  const input = document.createElement("input");
+  input.className = `form-control ${className}`;
+  input.type = type;
+  input.value = value;
+  input.placeholder = placeholder;
+  input.required = true;
+  if (type === "number") {
+    input.min = "1";
+    input.max = "999";
+  }
+  label.append(input);
+  return label;
+}
+
+function updateEpisodeRemoveButtons() {
+  const rows = [...episodeFormList.querySelectorAll(".episode-form-card")];
+  rows.forEach((row) => {
+    row.querySelector(".remove-episode").disabled = rows.length === 1;
+  });
+}
+
+function addEpisodeRow(episode = {}) {
+  const row = document.createElement("div");
+  row.className = "episode-form-card";
+  const top = document.createElement("div");
+  top.className = "episode-form-card-heading";
+  const label = document.createElement("strong");
+  label.textContent = `Episode ${episodeFormList.children.length + 1}`;
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "remove-episode";
+  remove.setAttribute("aria-label", "Remove episode");
+  remove.textContent = "Remove";
+  remove.addEventListener("click", () => {
+    row.remove();
+    [...episodeFormList.children].forEach((element, index) => {
+      element.querySelector(".episode-form-card-heading strong").textContent =
+        `Episode ${index + 1}`;
+    });
+    updateEpisodeRemoveButtons();
+  });
+  top.append(label, remove);
+
+  const numbers = document.createElement("div");
+  numbers.className = "episode-number-fields";
+  numbers.append(
+    createEpisodeField(
+      "Season",
+      "episode-season",
+      "number",
+      episode.season || 1,
+      "1",
+    ),
+    createEpisodeField(
+      "Episode number",
+      "episode-index",
+      "number",
+      episode.episode || episodeFormList.children.length + 1,
+      "1",
+    ),
+  );
+  row.append(
+    top,
+    numbers,
+    createEpisodeField(
+      "Episode title",
+      "episode-title",
+      "text",
+      episode.title || "",
+      "e.g. The first night",
+    ),
+    createEpisodeField(
+      "Episode watch link",
+      "episode-link",
+      "text",
+      episode.driveUrl || "",
+      "https://example.com/video-or-page, or a local file name",
+    ),
+  );
+  episodeFormList.append(row);
+  updateEpisodeRemoveButtons();
+}
+
+document
+  .querySelector("#add-episode")
+  .addEventListener("click", () => addEpisodeRow());
+
+function clearBannerPreview() {
+  if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+  previewObjectUrl = "";
+  bannerPreviewImage.removeAttribute("src");
+  bannerPreview.hidden = true;
+  document.querySelector("#upload-file-name").textContent =
+    "JPG, PNG, or WebP · max 8 MB";
+}
+
+function updateBannerPreview(source, filename = "") {
+  if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+  previewObjectUrl = source.startsWith("blob:") ? source : "";
+  bannerPreviewImage.src = source;
+  bannerPreview.hidden = false;
+  if (filename)
+    document.querySelector("#upload-file-name").textContent = filename;
+}
+
+const validBannerTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+bannerFileInput.addEventListener("change", () => {
+  const file = bannerFileInput.files[0];
+  if (!file) return;
+  if (!validBannerTypes.includes(file.type) || file.size > 8 * 1024 * 1024) {
+    formError.textContent =
+      "Choose a JPG, PNG, or WebP image smaller than 8 MB.";
+    bannerFileInput.value = "";
+    return;
+  }
+  formError.textContent = "";
+  updateBannerPreview(URL.createObjectURL(file), file.name);
+});
+
+bannerUrlInput.addEventListener("input", () => {
+  if (bannerFileInput.files.length) return;
+  const value = bannerUrlInput.value.trim();
+  if (!value) {
+    clearBannerPreview();
+    return;
+  }
+  try {
+    const url = new URL(value);
+    if (["https:", "http:"].includes(url.protocol))
+      updateBannerPreview(url.href);
+  } catch {
+    clearBannerPreview();
+  }
+});
+
+document.querySelector("#remove-banner").addEventListener("click", () => {
+  bannerFileInput.value = "";
+  bannerUrlInput.value = "";
+  clearBannerPreview();
+});
+
+function openTitleDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("This browser does not support local title storage."));
+      return;
+    }
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(STORE_NAME)) {
+        request.result.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () =>
+      reject(request.error || new Error("Could not open Vora storage."));
+  });
+}
+
+function readAllRecords() {
+  return new Promise((resolve, reject) => {
+    const request = titleDB
+      .transaction(STORE_NAME, "readonly")
+      .objectStore(STORE_NAME)
+      .getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () =>
+      reject(request.error || new Error("Could not read Vora titles."));
+  });
+}
+
+function saveRecord(record) {
+  return new Promise((resolve, reject) => {
+    if (!titleDB) {
+      resolve();
+      return;
+    }
+    const transaction = titleDB.transaction(STORE_NAME, "readwrite");
+    transaction.objectStore(STORE_NAME).put(record);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(transaction.error || new Error("Could not save this title."));
+    transaction.onabort = () =>
+      reject(
+        transaction.error || new Error("Vora storage is full or unavailable."),
+      );
+  });
+}
+
+function deleteRecord(id) {
+  return new Promise((resolve, reject) => {
+    if (!titleDB) {
+      resolve();
+      return;
+    }
+    const transaction = titleDB.transaction(STORE_NAME, "readwrite");
+    transaction.objectStore(STORE_NAME).delete(id);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(transaction.error || new Error("Could not remove this title."));
+    transaction.onabort = () =>
+      reject(
+        transaction.error || new Error("Vora storage is unavailable."),
+      );
+  });
+}
+
+function fileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () =>
+      reject(new Error("The banner image could not be read."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fileAsBannerDataUrl(file) {
+  const original = await fileAsDataUrl(file);
+  if (file.type === "image/gif") return original;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1280 / bitmap.width);
+    if (scale === 1 && file.size < 300 * 1024) return original;
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#0d192b";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    if (bitmap.close) bitmap.close();
+    const resized = canvas.toDataURL("image/jpeg", 0.85);
+    return resized.length < original.length ? resized : original;
+  } catch {
+    return original;
+  }
+}
+
+function normalizeRecord(record) {
+  const genres = Array.isArray(record.genres)
+    ? record.genres
+    : record.genre
+      ? [record.genre]
+      : ["Other"];
+  const type = record.type === "show" ? "show" : "movie";
+  let driveUrl = "";
+  try {
+    if (record.driveUrl) driveUrl = mediaLinkUrl(record.driveUrl);
+  } catch {
+    driveUrl = "";
+  }
+  const episodes =
+    type === "show" && Array.isArray(record.episodes)
+      ? sortEpisodes(
+          record.episodes.map((episode) => {
+            let episodeLink = "";
+            try {
+              episodeLink = mediaLinkUrl(episode.driveUrl || episode.url || "");
+            } catch {
+              episodeLink = "";
+            }
+            return {
+              season: Number(episode.season) || 1,
+              episode: Number(episode.episode) || 1,
+              title: episode.title || "Episode",
+              driveUrl: episodeLink,
+              still: episode.still || "",
+            };
+          }),
+        )
+      : [];
+  return {
+    id: record.id || createId(),
+    type,
+    title: record.title || "Untitled",
+    genres: [...new Set(genres.filter(Boolean))].slice(0, 2),
+    description: record.description || "",
+    banner: record.banner || "",
+    driveUrl,
+    episodes,
+    year: record.year || "",
+    rating: record.rating || "",
+    cert: record.cert || "",
+    detailsAt: record.detailsAt || 0,
+    createdAt: record.createdAt || new Date().toISOString(),
+  };
+}
+
+function toCardItem(record) {
+  return {
+    ...record,
+    genres: record.genres.length ? record.genres : ["Other"],
+  };
+}
+
+movieForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  formError.textContent = "";
+  if (!movieForm.reportValidity()) return;
+
+  const submitButton = document.querySelector("#submit-movie");
+  submitButton.disabled = true;
+  submitButton.textContent = "Saving…";
+  try {
+    const type = movieForm.querySelector(
+      'input[name="titleType"]:checked',
+    ).value;
+    const title = document.querySelector("#movie-name").value.trim();
+    const firstGenre = document.querySelector("#movie-genre").value;
+    const secondGenre = document.querySelector("#movie-genre-two").value;
+    const genres = [firstGenre, secondGenre].filter(Boolean);
+    if (secondGenre && secondGenre === firstGenre) {
+      throw new Error("Choose a different second genre, or leave it empty.");
+    }
+    if (
+      customTitles.some(
+        (item) => item.title.toLowerCase() === title.toLowerCase(),
+      )
+    ) {
+      throw new Error("You already added a title with that name.");
+    }
+
+    const file = bannerFileInput.files[0];
+    const bannerUrl = bannerUrlInput.value.trim();
+    if (!file && !bannerUrl)
+      throw new Error("Add a banner image URL or choose an image file.");
+    let banner;
+    if (file) {
+      if (
+        !validBannerTypes.includes(file.type) ||
+        file.size > 8 * 1024 * 1024
+      ) {
+        throw new Error("Choose a JPG, PNG, or WebP image smaller than 8 MB.");
+      }
+      banner = await fileAsBannerDataUrl(file);
+    } else {
+      const parsedBannerUrl = new URL(bannerUrl);
+      if (!["https:", "http:"].includes(parsedBannerUrl.protocol)) {
+        throw new Error("Use an http or https banner URL.");
+      }
+      banner = parsedBannerUrl.href;
+    }
+
+    const episodes =
+      type === "show"
+        ? sortEpisodes(
+            [...episodeFormList.querySelectorAll(".episode-form-card")].map(
+              (row) => ({
+                season: Number(row.querySelector(".episode-season").value),
+                episode: Number(row.querySelector(".episode-index").value),
+                title: row.querySelector(".episode-title").value.trim(),
+                driveUrl: mediaLinkUrl(
+                  row.querySelector(".episode-link").value.trim(),
+                ),
+              }),
+            ),
+          )
+        : [];
+    const movieLink =
+      type === "movie" ? mediaLinkUrl(movieDriveInput.value.trim()) : "";
+    const record = {
+      id: createId(),
+      type,
+      title,
+      genres,
+      description: document.querySelector("#movie-description").value.trim(),
+      banner,
+      driveUrl: movieLink,
+      episodes,
+      createdAt: new Date().toISOString(),
+    };
+
+    await saveRecord(record);
+    customTitles.unshift(toCardItem(record));
+    renderShelves();
+    searchInput.value = "";
+    applySearch();
+    movieForm.reset();
+    clearBannerPreview();
+    episodeFormList.replaceChildren();
+    updateTypeFields();
+    addDialog.close();
+    showToast(`${type === "show" ? "Show" : "Movie"} added to Vora`);
+    document
+      .querySelector(`#genre-${slug(genres[0])}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    formError.textContent = error.message || "This title could not be saved.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = `${movieForm.querySelector('input[name="titleType"]:checked').value === "show" ? "Add show" : "Add movie"} <span aria-hidden="true">↗</span>`;
+  }
+});
+
+function readEmbeddedLibrary() {
+  try {
+    const data = JSON.parse(document.querySelector("#vora-data").textContent);
+    if (data && Array.isArray(data.titles)) {
+      return { savedAt: String(data.savedAt || ""), titles: data.titles };
+    }
+  } catch {
+    /* fall through to an empty library */
+  }
+  return { savedAt: "", titles: [] };
+}
+
+function importedSnapshots() {
+  try {
+    const list = JSON.parse(localStorage.getItem(SNAPSHOT_KEY));
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberSnapshot(savedAt) {
+  if (!savedAt) return;
+  try {
+    const list = importedSnapshots().filter((entry) => entry !== savedAt);
+    list.push(savedAt);
+    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(list.slice(-50)));
+  } catch {
+    /* localStorage unavailable */
+  }
+}
+
+// Adds titles from the file that this browser doesn't have yet.
+// Each saved file is merged once, so titles you removed here stay removed.
+function mergeEmbeddedTitles(records, embedded) {
+  if (!embedded.titles.length) return 0;
+  if (embedded.savedAt && importedSnapshots().includes(embedded.savedAt)) return 0;
+  const ids = new Set(records.map((record) => record.id));
+  const names = new Set(
+    records.map((record) => String(record.title || "").toLowerCase()),
+  );
+  let added = 0;
+  for (const record of embedded.titles) {
+    if (!record || !record.id || ids.has(record.id)) continue;
+    if (names.has(String(record.title || "").toLowerCase())) continue;
+    records.push(record);
+    ids.add(record.id);
+    added++;
+  }
+  rememberSnapshot(embedded.savedAt);
+  return added;
+}
+
+function librarySignature(list) {
+  return list
+    .map((item) => item.id)
+    .sort()
+    .join("|");
+}
+
+function updateSaveState() {
+  if (!saveButton) return; // Export library button was removed from the topbar.
+  const changed = librarySignature(customTitles) !== savedSignature;
+  saveButton.classList.toggle("has-changes", changed);
+  saveButton.setAttribute(
+    "aria-label",
+    changed ? "Export library (unsaved changes)" : "Export library",
+  );
+}
+
+async function saveLibraryFile() {
+  const payload = {
+    app: "vora",
+    version: 2,
+    savedAt: new Date().toISOString(),
+    titles: customTitles,
+  };
+  const json = JSON.stringify(payload).replace(/</g, "\\u003c");
+  const dataBlock = new RegExp(
+    '(<scr' + 'ipt\\b[^>]*id="vora-data"[^>]*>)[\\s\\S]*?(</scr' + 'ipt>)',
+  );
+
+  if (!dataBlock.test(pristineHTML)) {
+    showToast("Could not build the file to save.");
+    return;
+  }
+
+  const html = pristineHTML.replace(
+    dataBlock,
+    (match, open, close) => open + json + close,
+  );
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const filename = "vora.html";
+
+  const markSaved = () => {
+    rememberSnapshot(payload.savedAt);
+    savedSignature = librarySignature(customTitles);
+    updateSaveState();
+  };
+
+  // Prefer the File System Access API so the user can choose the exact
+  // destination and filename instead of relying on browser download rules.
+  if ("showSaveFilePicker" in window) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [
+          {
+            description: "Vora HTML file",
+            accept: { "text/html": [".html"] },
+          },
+        ],
+        excludeAcceptAllOption: false,
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      markSaved();
+      showToast("Saved Vora library.");
+      return;
+    } catch (error) {
+      // Canceling the save dialog should not trigger another export path.
+      if (error?.name === "AbortError") return;
+      // Unsupported/blocked picker: continue to the compatibility fallbacks.
+    }
+  }
+
+  // Android/Chrome-based wrappers can expose Web Share even when they do not
+  // support the native save picker. This keeps export usable in those shells.
+  try {
+    const file = new File([blob], filename, { type: "text/html" });
+    if (
+      navigator.share &&
+      (!navigator.canShare || navigator.canShare({ files: [file] }))
+    ) {
+      await navigator.share({
+        title: "Vora library",
+        text: "Exported Vora library",
+        files: [file],
+      });
+      markSaved();
+      showToast("Vora library exported.");
+      return;
+    }
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+  }
+
+  // Final browser fallback for environments without the save picker/share.
+  try {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.rel = "noopener";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+    markSaved();
+    showToast("Saved vora.html.");
+    return;
+  } catch {
+    // Some WebViews block both download and blob URLs.
+  }
+
+  // Last-resort WebView fallback: open the generated file so it can still
+  // be saved/shared from the browser/WebView UI.
+  try {
+    const url = URL.createObjectURL(blob);
+    const opened = window.open(url, "_blank");
+    if (!opened) window.location.href = url;
+    markSaved();
+    showToast("Export opened. Save/share the HTML from there.");
+  } catch {
+    showToast("This browser blocks file export.");
+  }
+}
+
+// Note: the "Export library" button that used to trigger saveLibraryFile()
+// has been removed from the topbar. saveLibraryFile() and the save-state
+// tracking above are left in place (unused) rather than torn out, in case
+// a way to trigger them is added back later.
+
+// ---------------------------------------------------------------------
+// WebDAV connect & scan
+//
+// Lists a WebDAV server's folders over HTTP (the PROPFIND method), finds
+// video files, and turns them into the same row-shaped objects the CSV
+// importer uses — so the rest of the pipeline (dedup, TMDB auto-fill,
+// saving) is shared code, not a second copy of it.
+//
+// Works with or without a folder structure. A file name containing an
+// episode marker ("S01E02", "1x02", "Episode 3", …) is read as a show
+// episode — everything before the marker becomes the show's title, and
+// files that resolve to the same title are grouped into one show — so a
+// completely flat folder of files works fine. A subfolder, if present, is
+// also read as a show (named after the folder) regardless of what its
+// files are named, with an optional one more level of "Season N" folders
+// inside it. A file with no episode marker and no show folder becomes a
+// movie. Season/episode numbers come from the marker where there is one,
+// and are numbered in order otherwise.
+//
+// Watch links reuse the exact same local-path mechanism as CSV import
+// (see "Local file resolution" above): each file's path relative to the
+// scanned folder is stored as-is, and resolveWatchUrl() combines it with
+// whatever server address is currently saved at play time. Connecting here
+// saves the server's origin as that address, same as the 🌐 Server button.
+//
+// Two real-world constraints are out of Vora's control and worth knowing
+// up front: the WebDAV server must send CORS headers allowing this page's
+// origin, or the browser will block every request before Vora even sees a
+// response; and if Vora's own page is loaded over https, browsers will
+// refuse to contact a plain http:// WebDAV server (mixed content) — loading
+// Vora over http, or from a local file, avoids that.
+// ---------------------------------------------------------------------
+
+const WEBDAV_CONFIG_STORAGE = "vora-webdav-config";
+const WEBDAV_VIDEO_EXTENSIONS = ["mp4", "mkv", "mov", "avi", "webm", "m4v", "wmv", "flv"];
+const WEBDAV_MAX_DEPTH = 6; // generous headroom past show/season/file (depth 3)
+
+function loadWebdavConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(WEBDAV_CONFIG_STORAGE) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function saveWebdavConfig(config) {
+  try {
+    localStorage.setItem(WEBDAV_CONFIG_STORAGE, JSON.stringify(config));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+function webdavAuthHeaders(config) {
+  if (!config.username) return {};
+  const token = btoa(`${config.username}:${config.password || ""}`);
+  return { Authorization: `Basic ${token}` };
+}
+
+// PROPFIND (Depth: 1) on one folder. Returns [{ href, isDirectory }], href
+// resolved to an absolute URL, excluding the folder's own entry.
+async function webdavListFolder(folderUrl, config) {
+  let response;
+  try {
+    response = await fetch(folderUrl, {
+      method: "PROPFIND",
+      headers: {
+        Depth: "1",
+        "Content-Type": "application/xml; charset=utf-8",
+        ...webdavAuthHeaders(config),
+      },
+      body: '<?xml version="1.0" encoding="utf-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:resourcetype/></D:prop></D:propfind>',
+    });
+  } catch (error) {
+    throw new Error(
+      `Could not reach ${folderUrl} (${error.message}). Check the address, and that the server allows requests from this page (CORS).`,
+    );
+  }
+  if (response.status === 401 || response.status === 403) {
+    throw new Error(`${folderUrl} rejected the username/password (HTTP ${response.status}).`);
+  }
+  if (!response.ok && response.status !== 207) {
+    throw new Error(`${folderUrl} returned HTTP ${response.status}.`);
+  }
+  const text = await response.text();
+  let xml;
+  try {
+    xml = new DOMParser().parseFromString(text, "application/xml");
+    if (xml.querySelector("parsererror")) throw new Error("unreadable response");
+  } catch {
+    throw new Error(`${folderUrl} did not return a valid WebDAV listing.`);
+  }
+  const selfPath = new URL(folderUrl).pathname.replace(/\/+$/, "");
+  const entries = [];
+  for (const entry of Array.from(xml.getElementsByTagNameNS("DAV:", "response"))) {
+    const hrefEl = entry.getElementsByTagNameNS("DAV:", "href")[0];
+    if (!hrefEl) continue;
+    const resolved = new URL(hrefEl.textContent || "", folderUrl).href;
+    const path = new URL(resolved).pathname.replace(/\/+$/, "");
+    if (path === selfPath) continue; // the folder's own entry
+    const isDirectory = entry.getElementsByTagNameNS("DAV:", "collection").length > 0;
+    entries.push({ href: resolved, isDirectory });
+  }
+  return entries;
+}
+
+// A file's path relative to the folder that was scanned — kept percent-
+// encoded as-is, matching what resolveWatchUrl()/encodeLocalPathForUrl()
+// already expect from a stored local path.
+function webdavRelativePath(fileUrl, rootUrl) {
+  const filePath = new URL(fileUrl).pathname;
+  const rootPath = new URL(rootUrl).pathname.replace(/\/+$/, "");
+  const rel = filePath.startsWith(rootPath) ? filePath.slice(rootPath.length) : filePath;
+  return rel.startsWith("/") ? rel : `/${rel}`;
+}
+
+// Walks the folder tree from rootUrl, calling onProgress with a short
+// status line as it goes, and returns every video file found as
+// { href, name, trail }, where trail is the chain of folder/file names
+// from the scanned root down to the file itself.
+async function crawlWebdavTree(rootUrl, config, onProgress) {
+  const files = [];
+  const visited = new Set();
+
+  async function walk(folderUrl, depth, trail) {
+    if (depth > WEBDAV_MAX_DEPTH || visited.has(folderUrl)) return;
+    visited.add(folderUrl);
+    onProgress?.(`Scanning /${trail.join("/")}…`);
+    const entries = await webdavListFolder(folderUrl, config);
+    for (const entry of entries) {
+      const name = decodeURIComponent(
+        entry.href.replace(/\/+$/, "").split("/").pop() || "",
+      );
+      if (!name) continue;
+      if (entry.isDirectory) {
+        const next = entry.href.endsWith("/") ? entry.href : `${entry.href}/`;
+        await walk(next, depth + 1, [...trail, name]);
+      } else if (WEBDAV_VIDEO_EXTENSIONS.includes(name.split(".").pop().toLowerCase())) {
+        files.push({ href: entry.href, name, trail: [...trail, name] });
+      }
+    }
+  }
+
+  await walk(rootUrl, 0, []);
+  return files;
+}
+
+function webdavSeasonFromFolderName(name) {
+  const match = name.match(/season\s*(\d{1,2})/i) || name.match(/^s(\d{1,2})$/i);
+  return match ? Number(match[1]) : null;
+}
+
+// Looks for a season/episode marker anywhere in a (no-extension) file name
+// — "S01E02", "1x02", or "Season 1 ... Episode 2" / "Episode 2" alone —
+// and also reports where the earliest marker starts, so the text before it
+// can be used as a show title guess when there's no folder to supply one.
+function webdavEpisodeMarkerInName(cleanName) {
+  let match = cleanName.match(/s(\d{1,2})[\s._-]*e(\d{1,3})/i);
+  if (match) return { season: Number(match[1]), episode: Number(match[2]), index: match.index };
+
+  match = cleanName.match(/\b(\d{1,2})x(\d{1,3})\b/i);
+  if (match) return { season: Number(match[1]), episode: Number(match[2]), index: match.index };
+
+  const seasonMatch = cleanName.match(/season\s*(\d{1,2})/i);
+  const episodeMatch = cleanName.match(/episode\s*(\d{1,3})/i);
+  if (seasonMatch || episodeMatch) {
+    const index = Math.min(
+      seasonMatch ? seasonMatch.index : Infinity,
+      episodeMatch ? episodeMatch.index : Infinity,
+    );
+    return {
+      season: seasonMatch ? Number(seasonMatch[1]) : null,
+      episode: episodeMatch ? Number(episodeMatch[1]) : null,
+      index,
+    };
+  }
+  return null;
+}
+
+// Turns "Young.Sheldon.S01E02.Pilot" (everything before the marker) into a
+// clean guess at the show's title: "Young Sheldon".
+function titleGuessFromFileName(cleanName, markerIndex) {
+  return cleanName
+    .slice(0, markerIndex)
+    .replace(/[._]+/g, " ")
+    .replace(/[\s\-–—:]+$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+// Turns scanned files into the same row-shaped objects buildImportPlan()
+// already consumes from CSV import.
+function classifyWebdavFiles(files, rootUrl) {
+  const objects = [];
+  let row = 0;
+
+  // First pass: work out each file's show/season/parsed-episode so that,
+  // in the second pass, unnumbered files can be assigned a fallback number
+  // that's guaranteed not to collide with a number parsed from another
+  // file in the same show+season.
+  const prepared = files.map((file) => {
+    const cleanName = file.name.replace(/\.[^.]+$/, "");
+
+    if (file.trail.length > 1) {
+      // Inside a folder: the folder name is the show's title.
+      const showTitle = file.trail[0].trim();
+      let season = null;
+      for (const segment of file.trail.slice(1, -1)) {
+        const found = webdavSeasonFromFolderName(segment);
+        if (found) season = found;
+      }
+      const marker = webdavEpisodeMarkerInName(cleanName);
+      if (season === null && marker?.season) season = marker.season;
+      if (season === null) season = 1;
+      return { file, isMovie: false, showTitle, season, episode: marker?.episode ?? null };
+    }
+
+    // No folders at all: tell a show episode from a movie using the file
+    // name alone (e.g. "Young Sheldon S01E02.mp4"). No marker → a movie.
+    const marker = webdavEpisodeMarkerInName(cleanName);
+    if (!marker) return { file, isMovie: true };
+    const showTitle = titleGuessFromFileName(cleanName, marker.index) || cleanName;
+    return {
+      file,
+      isMovie: false,
+      showTitle,
+      season: marker.season ?? 1,
+      episode: marker.episode ?? null,
+    };
+  });
+
+  const usedEpisodeNumbers = new Map(); // "show|season" -> Set of taken episode numbers
+  for (const entry of prepared) {
+    if (entry.isMovie || !entry.episode) continue;
+    const key = `${entry.showTitle}|${entry.season}`;
+    if (!usedEpisodeNumbers.has(key)) usedEpisodeNumbers.set(key, new Set());
+    usedEpisodeNumbers.get(key).add(entry.episode);
+  }
+
+  const nextCounter = new Map(); // "show|season" -> next candidate number to try
+  function assignFallbackEpisode(showTitle, season) {
+    const key = `${showTitle}|${season}`;
+    const used = usedEpisodeNumbers.get(key) || new Set();
+    let candidate = nextCounter.get(key) || 1;
+    while (used.has(candidate)) candidate++;
+    used.add(candidate);
+    usedEpisodeNumbers.set(key, used);
+    nextCounter.set(key, candidate + 1);
+    return candidate;
+  }
+
+  for (const entry of prepared) {
+    row++;
+    const watch = webdavRelativePath(entry.file.href, rootUrl);
+
+    if (entry.isMovie) {
+      objects.push({
+        __row: row,
+        type: "movie",
+        title: entry.file.name.replace(/\.[^.]+$/, "").trim(),
+        genre: "",
+        genre2: "",
+        description: "",
+        banner: "",
+        watch,
+        season: "",
+        episode: "",
+      });
+      continue;
+    }
+
+    const episode = entry.episode ?? assignFallbackEpisode(entry.showTitle, entry.season);
+    objects.push({
+      __row: row,
+      type: "show",
+      title: entry.showTitle,
+      genre: "",
+      genre2: "",
+      description: "",
+      banner: "",
+      watch,
+      season: String(entry.season),
+      episode: String(episode),
+    });
+  }
+
+  return objects;
+}
+
+webdavForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  webdavError.textContent = "";
+
+  let rootUrl;
+  try {
+    const base = new URL(webdavUrlInput.value.trim());
+    const rootPath = (webdavRootInput.value.trim() || "/").replace(/^\/*/, "/");
+    rootUrl = new URL(rootPath.endsWith("/") ? rootPath : `${rootPath}/`, base).href;
+  } catch {
+    webdavError.textContent = "Enter a valid server URL, e.g. http://192.168.31.249:8080/";
+    return;
+  }
+
+  const config = {
+    url: webdavUrlInput.value.trim(),
+    username: webdavUsernameInput.value.trim(),
+    password: webdavPasswordInput.value,
+    root: webdavRootInput.value.trim(),
+  };
+
+  submitWebdavButton.disabled = true;
+  webdavStatus.hidden = false;
+  webdavStatus.textContent = "Connecting…";
+
+  try {
+    const files = await crawlWebdavTree(rootUrl, config, (line) => {
+      webdavStatus.textContent = line;
+    });
+
+    if (!files.length) {
+      webdavError.textContent = "Connected, but found no video files in that folder.";
+      return;
+    }
+
+    webdavStatus.textContent = `Found ${files.length} file${files.length === 1 ? "" : "s"} — matching against your library…`;
+
+    saveWebdavConfig(config);
+    const serverAddress = normalizeServerAddress(new URL(rootUrl).origin);
+    setServerAddress(serverAddress);
+
+    const objects = classifyWebdavFiles(files, rootUrl);
+    await importScannedObjects(objects, {
+      extraMessage: `server address saved (${serverAddress})`,
+    });
+
+    webdavDialog.close();
+  } catch (error) {
+    console.error(error);
+    webdavError.textContent = error.message || "That server could not be scanned.";
+  } finally {
+    submitWebdavButton.disabled = false;
+    webdavStatus.hidden = true;
+  }
+});
+
+// ---------------------------------------------------------------------
+// TMDB auto-fill
+//
+// Uses TMDB's free v3 API (a personal API key from
+// https://www.themoviedb.org/settings/api, saved locally via the ⚙ TMDB key
+// button — it is never sent anywhere but api.themoviedb.org). For any
+// imported title missing a banner, genre, or description, Vora searches
+// TMDB for that title (as a movie or as a tv show, matching the CSV's
+// type) and fills in whatever the CSV left blank from the best match.
+// Fields the CSV already supplied are never overwritten.
+//
+// Two things keep large imports (dozens/hundreds of titles) from hitting
+// TMDB's rate limit (40 requests per 10 seconds):
+//   1. Every lookup result (including "no match found") is cached locally
+//      by title+type for 30 days, so re-importing a title you've already
+//      looked up — even in an earlier session — never costs a request.
+//   2. Whatever's left after the cache is run through a queue that fires
+//      at most 40 requests, then waits out the rest of that 10-second
+//      window before sending the next 40 — so a 100-title import just
+//      takes a few extra seconds instead of failing partway through.
+// ---------------------------------------------------------------------
+
+const TMDB_KEY_STORAGE = "vora-tmdb-key";
+
+function getTmdbKey() {
+  try {
+    return (localStorage.getItem(TMDB_KEY_STORAGE) || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function setTmdbKey(key) {
+  try {
+    if (key) localStorage.setItem(TMDB_KEY_STORAGE, key);
+    else localStorage.removeItem(TMDB_KEY_STORAGE);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+tmdbSettingsButton.addEventListener("click", () => {
+  const entered = window.prompt(
+    "Paste a free TMDB API key (v3 auth) so scans can auto-fill banner, genre, and description for titles that don't already have them.\n\nGet one at https://www.themoviedb.org/settings/api\n\nLeave blank and press OK to remove the saved key.",
+    getTmdbKey(),
+  );
+  if (entered === null) return; // cancelled
+  const trimmed = entered.trim();
+  setTmdbKey(trimmed);
+  showToast(trimmed ? "TMDB API key saved on this device." : "TMDB API key removed.");
+});
+
+// TMDB's stable numeric genre ids, mapped to their TMDB names.
+const TMDB_MOVIE_GENRES = {
+  28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
+  99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
+  27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance",
+  878: "Science Fiction", 10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
+};
+const TMDB_TV_GENRES = {
+  10759: "Action & Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
+  99: "Documentary", 18: "Drama", 10751: "Family", 10762: "Kids", 9648: "Mystery",
+  10763: "News", 10764: "Reality", 10765: "Sci-Fi & Fantasy", 10766: "Soap",
+  10767: "Talk", 10768: "War & Politics", 37: "Western",
+};
+// TMDB's genre names, mapped onto Vora's own fixed genre list.
+const TMDB_TO_VORA_GENRE = {
+  Action: "Action", Adventure: "Adventure", Animation: "Animation", Comedy: "Comedy",
+  Crime: "Crime", Documentary: "Documentary", Drama: "Drama", Family: "Family",
+  Fantasy: "Fantasy", Horror: "Horror", Mystery: "Mystery", Romance: "Romance",
+  "Science Fiction": "Sci-Fi", Thriller: "Thriller",
+  "Action & Adventure": "Action", Kids: "Family", "Sci-Fi & Fantasy": "Sci-Fi", Soap: "Drama",
+  History: "Other", Music: "Other", "TV Movie": "Other", War: "Other", Western: "Other",
+  News: "Other", Reality: "Other", Talk: "Other", "War & Politics": "Other",
+};
+
+const TMDB_CACHE_STORAGE = "vora-tmdb-cache";
+const TMDB_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+function loadTmdbCache() {
+  try {
+    return JSON.parse(localStorage.getItem(TMDB_CACHE_STORAGE) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveTmdbCache(cache) {
+  try {
+    localStorage.setItem(TMDB_CACHE_STORAGE, JSON.stringify(cache));
+  } catch {
+    /* storage unavailable, or full — cache just won't persist this run */
+  }
+}
+
+function tmdbCacheKey(title, type) {
+  return `${type === "show" ? "tv" : "movie"}:${title.trim().toLowerCase()}`;
+}
+
+// Runs queued async tasks in batches of `limit`, waiting out the rest of
+// each `windowMs` window before starting the next batch — so a long list
+// of lookups never sends more than `limit` requests in any `windowMs`
+// stretch, instead of firing them all at once and getting rate-limited.
+function createRateLimitedQueue(limit, windowMs) {
+  const queue = [];
+  let draining = false;
+
+  async function drain() {
+    if (draining) return;
+    draining = true;
+    while (queue.length) {
+      const batch = queue.splice(0, limit);
+      const startedAt = Date.now();
+      await Promise.all(
+        batch.map(({ task, resolve, reject }) => task().then(resolve, reject)),
+      );
+      if (queue.length) {
+        const elapsed = Date.now() - startedAt;
+        const remaining = windowMs - elapsed;
+        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+      }
+    }
+    draining = false;
+  }
+
+  return function enqueue(task) {
+    return new Promise((resolve, reject) => {
+      queue.push({ task, resolve, reject });
+      drain();
+    });
+  };
+}
+
+// TMDB's free tier allows 40 requests per 10 seconds.
+const queueTmdbRequest = createRateLimitedQueue(40, 10000);
+
+async function fetchTmdbMetadata(title, type, apiKey) {
+  const endpoint = type === "show" ? "tv" : "movie";
+  const url = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${encodeURIComponent(apiKey)}&query=${encodeURIComponent(title)}&include_adult=false`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(response.status === 401 ? "invalid API key" : `HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  const match = (data.results || [])[0];
+  if (!match) return null;
+  const genreNames = type === "show" ? TMDB_TV_GENRES : TMDB_MOVIE_GENRES;
+  const genres = [
+    ...new Set(
+      (match.genre_ids || [])
+        .map((id) => TMDB_TO_VORA_GENRE[genreNames[id]])
+        .filter(Boolean),
+    ),
+  ].slice(0, 2);
+  const image = match.backdrop_path || match.poster_path;
+  return {
+    banner: image ? `https://image.tmdb.org/t/p/w1280${image}` : "",
+    description: (match.overview || "").trim(),
+    genres,
+  };
+}
+
+function applyTmdbMeta(record, meta, errors) {
+  if (!meta) {
+    errors.push(`"${record.title}": no match found on TMDB — filled in manually instead.`);
+    return;
+  }
+  if (!record.banner && meta.banner) record.banner = meta.banner;
+  if (!record.description && meta.description) record.description = meta.description;
+  if (!record.genres.length && meta.genres.length) record.genres = meta.genres;
+}
+
+// Fills in whatever banner/description/genres each record is missing by
+// looking its title up on TMDB. Mutates `newRecords` in place and pushes
+// human-readable notes onto `errors` for anything it couldn't fill.
+// Cache hits are applied immediately with no network call at all; only
+// cache misses get queued, 40 at a time, 10 seconds apart.
+async function enrichRecordsWithTmdb(newRecords, errors) {
+  const apiKey = getTmdbKey();
+  const incomplete = newRecords.filter(
+    (record) => !record.banner || !record.description || !record.genres.length,
+  );
+  if (!incomplete.length) return;
+  if (!apiKey) {
+    errors.push(
+      `${incomplete.length} title${incomplete.length === 1 ? "" : "s"} left without a banner/genre/description — click the ⚙ TMDB key button to add a free key and auto-fill these on your next import.`,
+    );
+    return;
+  }
+
+  const cache = loadTmdbCache();
+  let cacheChanged = false;
+  const toFetch = [];
+
+  for (const record of incomplete) {
+    const cacheKey = tmdbCacheKey(record.title, record.type);
+    const cached = cache[cacheKey];
+    if (cached && Date.now() - cached.fetchedAt < TMDB_CACHE_TTL_MS) {
+      applyTmdbMeta(record, cached.data, errors);
+    } else {
+      toFetch.push({ record, cacheKey });
+    }
+  }
+
+  if (toFetch.length > 40) {
+    showToast(
+      `Looking up ${toFetch.length} titles on TMDB — this will take about ${Math.ceil(toFetch.length / 40) * 10} seconds…`,
+    );
+  }
+
+  await Promise.all(
+    toFetch.map(({ record, cacheKey }) =>
+      queueTmdbRequest(async () => {
+        let meta;
+        try {
+          meta = await fetchTmdbMetadata(record.title, record.type, apiKey);
+        } catch (error) {
+          errors.push(`"${record.title}": TMDB lookup failed (${error.message}).`);
+          return;
+        }
+        cache[cacheKey] = { data: meta, fetchedAt: Date.now() };
+        cacheChanged = true;
+        applyTmdbMeta(record, meta, errors);
+      }),
+    ),
+  );
+
+  if (cacheChanged) saveTmdbCache(cache);
+}
+
+function buildImportPlan(objects, existingTitles) {
+  const takenTitles = new Set(existingTitles.map((t) => t.toLowerCase()));
+  const showGroups = new Map();
+  const showOrder = [];
+  const newRecords = [];
+  const errors = [];
+  let skippedDuplicates = 0;
+
+  for (const object of objects) {
+    const title = object.title.trim();
+    if (!title) {
+      errors.push(`Row ${object.__row}: missing a title — skipped.`);
+      continue;
+    }
+    const type = object.type.trim().toLowerCase() === "show" ? "show" : "movie";
+    const key = `${type}:${title.toLowerCase()}`;
+
+    if (type === "movie") {
+      if (takenTitles.has(title.toLowerCase())) {
+        skippedDuplicates++;
+        continue;
+      }
+      takenTitles.add(title.toLowerCase());
+      const genres = [object.genre, object.genre2].filter(Boolean).slice(0, 2);
+      newRecords.push({
+        id: createId(),
+        type: "movie",
+        title,
+        genres,
+        description: object.description,
+        banner: object.banner,
+        driveUrl: object.watch,
+        episodes: [],
+        createdAt: new Date().toISOString(),
+      });
+      continue;
+    }
+
+    // Show row: group by title so every episode row folds into one show.
+    if (!showGroups.has(key)) {
+      if (takenTitles.has(title.toLowerCase())) {
+        skippedDuplicates++;
+        showGroups.set(key, null); // mark as skipped so its episodes are ignored too
+      } else {
+        takenTitles.add(title.toLowerCase());
+        showGroups.set(key, {
+          title,
+          genre: "",
+          genre2: "",
+          description: "",
+          banner: "",
+          episodes: [],
+        });
+        showOrder.push(key);
+      }
+    }
+    const group = showGroups.get(key);
+    if (!group) continue; // this show was a duplicate; skip its episode rows too
+
+    if (object.genre && !group.genre) group.genre = object.genre;
+    if (object.genre2 && !group.genre2) group.genre2 = object.genre2;
+    if (object.description && !group.description) group.description = object.description;
+    // "find a banner in the show's episodes and use it as the show's banner"
+    if (object.banner && !group.banner) group.banner = object.banner;
+
+    const season = Number.parseInt(object.season, 10) || 1;
+    const episodeNumber =
+      Number.parseInt(object.episode, 10) || group.episodes.length + 1;
+    if (!object.watch) {
+      errors.push(`Row ${object.__row}: "${title}" episode S${season}E${episodeNumber} has no watch link.`);
+    }
+    group.episodes.push({
+      season,
+      episode: episodeNumber,
+      title: `Season ${season}, Episode ${episodeNumber}`,
+      driveUrl: object.watch,
+    });
+  }
+
+  for (const key of showOrder) {
+    const group = showGroups.get(key);
+    if (!group || !group.episodes.length) continue;
+    const genres = [group.genre, group.genre2].filter(Boolean).slice(0, 2);
+    newRecords.push({
+      id: createId(),
+      type: "show",
+      title: group.title,
+      genres,
+      description: group.description,
+      banner: group.banner,
+      driveUrl: "",
+      episodes: group.episodes,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  return { newRecords, errors, skippedDuplicates };
+}
+
+// Shared tail end of every bulk-import source (WebDAV scan):
+// turns a list of row-shaped objects (type/title/genre/genre2/description/
+// banner/watch/season/episode/__row) into saved library entries, same dedup
+// and TMDB auto-fill rules every time. `extraMessage`, if given, is appended
+// to the success toast (e.g. noting a server address that was just saved).
+async function importScannedObjects(objects, { noneFoundMessage, extraMessage } = {}) {
+  const existingTitles = customTitles.map((item) => item.title);
+  const { newRecords, errors, skippedDuplicates } = buildImportPlan(
+    objects,
+    existingTitles,
+  );
+
+  if (!newRecords.length) {
+    showToast(
+      skippedDuplicates
+        ? `Nothing new to import — ${skippedDuplicates} title${skippedDuplicates === 1 ? "" : "s"} already in your library.`
+        : noneFoundMessage || "No valid rows found to import.",
+    );
+    return;
+  }
+
+  await enrichRecordsWithTmdb(newRecords, errors);
+
+  const normalized = newRecords.map(normalizeRecord).map(toCardItem);
+  await Promise.all(normalized.map(saveRecord));
+  customTitles = [...normalized, ...customTitles];
+  renderShelves();
+  searchInput.value = "";
+  applySearch();
+
+  const showCount = normalized.filter((item) => item.type === "show").length;
+  const movieCount = normalized.length - showCount;
+  const parts = [];
+  if (movieCount) parts.push(`${movieCount} movie${movieCount === 1 ? "" : "s"}`);
+  if (showCount) parts.push(`${showCount} show${showCount === 1 ? "" : "s"}`);
+  let message = `Imported ${parts.join(" and ")}`;
+  if (skippedDuplicates) {
+    message += ` · skipped ${skippedDuplicates} duplicate${skippedDuplicates === 1 ? "" : "s"}`;
+  }
+  if (extraMessage) message += ` · ${extraMessage}`;
+  showToast(message);
+
+  if (errors.length) {
+    // Non-blocking: the import already happened, this just surfaces rows
+    // that were missing a watch link so they can be filled in later.
+    console.warn("Vora import notes:\n" + errors.join("\n"));
+    window.alert(
+      `Imported with ${errors.length} note${errors.length === 1 ? "" : "s"}:\n\n` +
+        errors.slice(0, 20).join("\n") +
+        (errors.length > 20 ? `\n…and ${errors.length - 20} more.` : ""),
+    );
+  }
+}
+
+async function initialize() {
+  const embedded = readEmbeddedLibrary();
+  const embeddedTitles = embedded.titles.map(normalizeRecord);
+  savedSignature = librarySignature(embeddedTitles);
+  let importedCount = 0;
+  try {
+    titleDB = await openTitleDatabase();
+    const records = await readAllRecords();
+    importedCount = mergeEmbeddedTitles(records, embedded);
+    customTitles = records
+      .map(normalizeRecord)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map(toCardItem);
+    await Promise.all(customTitles.map(saveRecord));
+  } catch (error) {
+    console.error("Vora browser storage is unavailable:", error);
+    titleDB = undefined;
+    customTitles = embeddedTitles
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map(toCardItem);
+    showToast("Browser storage is unavailable — changes made this session won't be kept.");
+  }
+  renderShelves();
+  if (importedCount) {
+    showToast(
+      `Loaded ${importedCount} title${importedCount === 1 ? "" : "s"} from this file`,
+    );
+  }
+}
+
+addEpisodeRow();
+updateTypeFields();
+initialize();
+    </script>
+  </body>
+</html>
