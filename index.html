@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0b10" />
+    <title>Vora — Your stories, your screen</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0b10'/%3E%3Cpath d='M16 18 L32 48 L48 18' fill='none' stroke='%235b91ff' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar" id="topbar">
+        <a class="brand" href="#top" aria-label="Vora home">
+          <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 16 L32 50 L50 16" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="brand-word">VORA</span>
+        </a>
+        <nav class="main-nav" aria-label="Browse">
+          <button class="nav-link active" type="button" data-chip="all" aria-pressed="true">Home</button>
+          <button class="nav-link" type="button" data-chip="movie" aria-pressed="false">Movies</button>
+          <button class="nav-link" type="button" data-chip="show" aria-pressed="false">Shows</button>
+          <button class="nav-link" type="button" data-chip="animation" aria-pressed="false" hidden>Animation</button>
+        </nav>
+        <div class="topbar-actions">
+          <form id="search-form" class="search-box" role="search">
+            <button id="search-toggle" class="icon-button" type="button" aria-label="Search your library">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            </button>
+            <input id="search-input" type="search" placeholder="Titles, genres, episodes" aria-label="Search your library" autocomplete="off" />
+          </form>
+          <div class="menu-wrap">
+            <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Menu and settings" aria-haspopup="true" aria-expanded="false" aria-controls="menu-panel">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+            </button>
+            <div id="menu-panel" class="menu-panel" hidden>
+              <div class="menu-stats" aria-label="Library size">
+                <div class="menu-stat"><strong id="stat-movies">0</strong><span>Movies</span></div>
+                <div class="menu-stat"><strong id="stat-shows">0</strong><span>Shows</span></div>
+              </div>
+              <button id="open-add-movie" class="menu-item" type="button"><span class="menu-icon" aria-hidden="true">+</span>Add title</button>
+              <button id="open-import-csv" class="menu-item" type="button" title="Import titles from a CSV file — only type, title, and watch link are required; the rest can be auto-filled from TMDB"><span class="menu-icon" aria-hidden="true">⇧</span>Import CSV</button>
+              <input id="import-csv-input" type="file" accept=".csv,text/csv" hidden />
+              <button id="open-cloud-csv" class="menu-item" type="button" title="Upload a CSV to the cloud, or load the one saved there"><span class="menu-icon" aria-hidden="true">☁</span>Cloud CSV</button>
+              <input id="cloud-csv-input" type="file" accept=".csv,text/csv" hidden />
+              <button id="open-tmdb-settings" class="menu-item" type="button" title="Set a free TMDB API key for posters, auto-fill and cast"><span class="menu-icon" aria-hidden="true">⚙</span>TMDB key</button>
+              <button id="open-advanced-settings" class="menu-item" type="button" title="Home banner, favorites and the home category"><span class="menu-icon" aria-hidden="true">🎛</span>Advanced settings</button>
+              <div class="menu-sep"></div>
+              <button id="empty-library" class="menu-item danger" type="button"><span class="menu-icon" aria-hidden="true">🗑</span><span id="empty-library-label">Empty media library</span></button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="hero hero-empty" id="top">
+        <div id="hero-art" class="hero-art"></div>
+        <div class="hero-scrim"></div>
+        <div class="hero-inner">
+          <button id="hero-poster" class="hero-poster" type="button" aria-label="Open details" hidden></button>
+          <div class="hero-content">
+            <p class="hero-eyebrow"><span class="eyebrow-mark">V</span><span id="hero-eyebrow">Vora</span></p>
+            <h1 id="hero-title">Your library</h1>
+            <div id="hero-meta" class="hero-meta" hidden></div>
+            <p id="hero-description" class="hero-description">Add a movie or show to start building your own Vora library.</p>
+            <div class="hero-actions">
+              <button id="hero-action" class="button button-light" type="button">
+                <span id="hero-action-icon" class="btn-icon" aria-hidden="true"></span><span id="hero-action-label">Add your first title</span>
+              </button>
+              <button id="hero-info" class="button button-muted" type="button" hidden>
+                <span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.01" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>More info</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="hero-dots" class="hero-dots" hidden></div>
+      </section>
+
+      <main class="content-area">
+        <section id="library-empty" class="empty-state">
+          <div class="empty-state-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.6v14.8a1 1 0 0 0 1.52.85l12-7.4a1 1 0 0 0 0-1.7l-12-7.4A1 1 0 0 0 7 4.6z"/></svg></div>
+          <h2>Nothing here yet</h2>
+          <p>Add a movie or show with a watch link and a banner image. It will appear on shelves, with posters from TMDB.</p>
+          <button class="button button-light" type="button" data-open-add>Add a title</button>
+        </section>
+        <p id="no-search-results" class="no-search-results" hidden>No titles match your search.</p>
+
+        <section id="recent-shelf" class="shelf" data-filter="recent" hidden>
+          <div class="shelf-heading">
+            <h2><span id="recent-shelf-title">Recent &amp; Favorites</span></h2>
+            <div class="shelf-controls">
+              <button type="button" class="carousel-button" data-direction="-1" data-target="recent-row" aria-label="Scroll left">‹</button>
+              <button type="button" class="carousel-button" data-direction="1" data-target="recent-row" aria-label="Scroll right">›</button>
+            </div>
+          </div>
+          <div id="recent-row" class="card-row"></div>
+        </section>
+
+        <section id="movies-shelf" class="shelf" data-filter="movie" hidden>
+          <div class="shelf-heading">
+            <h2>Movies</h2>
+            <div class="shelf-controls">
+              <button type="button" class="carousel-button" data-direction="-1" data-target="movies-row" aria-label="Scroll movies left">‹</button>
+              <button type="button" class="carousel-button" data-direction="1" data-target="movies-row" aria-label="Scroll movies right">›</button>
+            </div>
+          </div>
+          <div id="movies-row" class="card-row"></div>
+        </section>
+
+        <section id="shows-shelf" class="shelf" data-filter="show" hidden>
+          <div class="shelf-heading">
+            <h2>Shows</h2>
+            <div class="shelf-controls">
+              <button type="button" class="carousel-button" data-direction="-1" data-target="shows-row" aria-label="Scroll shows left">‹</button>
+              <button type="button" class="carousel-button" data-direction="1" data-target="shows-row" aria-label="Scroll shows right">›</button>
+            </div>
+          </div>
+          <div id="shows-row" class="card-row"></div>
+        </section>
+
+        <div id="genre-shelves"></div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-brand">VORA</div>
+        <span class="copyright">Titles are kept in this browser. <span id="library-count"></span></span>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Title details (must stay before the add dialog: it owns the first .dialog-close) -->
+    <dialog id="title-dialog" class="title-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-art">
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="dialog-content">
+        <h2 id="dialog-title"></h2>
+        <div id="dialog-meta" class="dialog-meta"></div>
+        <div class="dialog-primary">
+          <button id="dialog-watch" class="dialog-watch" type="button"></button>
+          <button id="dialog-favorite" class="favorite-button" type="button" aria-pressed="false" aria-label="Add to favorites" title="Add to favorites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Favorite</span></button>
+        </div>
+        <div class="dialog-actions">
+          <button id="toggle-add-episode" class="add-episode-button" type="button" hidden>+ Add episode</button>
+          <button id="dialog-remove" class="remove-title-button" type="button">Remove from library</button>
+        </div>
+        <div id="remove-confirm" class="remove-confirm" role="alertdialog" aria-labelledby="remove-confirm-text" hidden>
+          <p id="remove-confirm-text"></p>
+          <button id="confirm-remove" class="danger-button" type="button">Yes, remove</button>
+          <button id="cancel-remove" class="cancel-button" type="button">Keep it</button>
+          <p id="remove-error" class="form-error remove-error" role="alert"></p>
+        </div>
+        <form id="dialog-episode-form" class="episode-form-card dialog-episode-form" novalidate hidden>
+          <div class="episode-form-card-heading">
+            <strong>New episode</strong>
+          </div>
+          <div class="episode-number-fields">
+            <label class="episode-input-label">Season
+              <input id="dialog-episode-season" class="form-control" type="number" min="1" max="999" value="1" required />
+            </label>
+            <label class="episode-input-label">Episode number
+              <input id="dialog-episode-index" class="form-control" type="number" min="1" max="999" value="1" required />
+            </label>
+          </div>
+          <label class="episode-input-label">Episode title
+            <input id="dialog-episode-title" class="form-control" type="text" placeholder="e.g. The first night" required />
+          </label>
+          <label class="episode-input-label">Episode watch link
+            <input id="dialog-episode-link" class="form-control" type="text" placeholder="https://example.com/video-or-page" required />
+          </label>
+          <p id="dialog-episode-error" class="form-error" role="alert"></p>
+          <div class="form-actions">
+            <button id="cancel-dialog-episode" class="cancel-button" type="button">Cancel</button>
+            <button id="submit-dialog-episode" class="button submit-movie-button" type="submit">Add episode</button>
+          </div>
+        </form>
+        <p id="dialog-description" class="dialog-description"></p>
+        <div id="season-bar" class="season-bar" hidden>
+          <select id="season-select" aria-label="Season"></select>
+          <span id="episode-count-note" class="episode-count-note"></span>
+        </div>
+        <div id="episode-list" class="episode-list" hidden></div>
+        <section id="cast-section" class="cast-section" hidden>
+          <h3>Cast</h3>
+          <div id="cast-row" class="cast-row"></div>
+        </section>
+      </div>
+    </dialog>
+
+    <!-- Add title -->
+    <dialog id="add-movie-dialog" class="add-dialog" aria-labelledby="add-dialog-title">
+      <div class="add-dialog-heading">
+        <div>
+          <h2 id="add-dialog-title">Add a title</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form id="movie-form" novalidate>
+        <fieldset class="type-picker">
+          <legend class="field-label">Type</legend>
+          <label><input type="radio" name="titleType" value="movie" checked /><span>Movie</span></label>
+          <label><input type="radio" name="titleType" value="show" /><span>Show</span></label>
+        </fieldset>
+
+        <label class="field-label" for="movie-name">Title</label>
+        <input id="movie-name" class="form-control" type="text" maxlength="120" placeholder="e.g. Midnight Harbor" required autocomplete="off" />
+
+        <div class="form-row genre-row">
+          <div class="form-field">
+            <label class="field-label" for="movie-genre">Genre</label>
+            <select id="movie-genre" class="form-control" required>
+              <option value="">Choose a genre</option>
+              <option>Action</option><option>Adventure</option><option>Animation</option>
+              <option>Comedy</option><option>Crime</option><option>Documentary</option>
+              <option>Drama</option><option>Family</option><option>Fantasy</option>
+              <option>Horror</option><option>Mystery</option><option>Romance</option>
+              <option>Sci-Fi</option><option>Thriller</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="movie-genre-two">Second genre <span>(optional)</span></label>
+            <select id="movie-genre-two" class="form-control">
+              <option value="">None</option>
+              <option>Action</option><option>Adventure</option><option>Animation</option>
+              <option>Comedy</option><option>Crime</option><option>Documentary</option>
+              <option>Drama</option><option>Family</option><option>Fantasy</option>
+              <option>Horror</option><option>Mystery</option><option>Romance</option>
+              <option>Sci-Fi</option><option>Thriller</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <p class="field-hint genre-hint">The title appears on a shelf for each genre you pick.</p>
+
+        <label class="field-label" for="movie-description">Description <span>(optional)</span></label>
+        <textarea id="movie-description" class="form-control description-input" maxlength="600" placeholder="A short synopsis"></textarea>
+
+        <label class="field-label" for="movie-banner-file">Banner image</label>
+        <label class="upload-control">
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <span><strong>Upload an image</strong><small id="upload-file-name">JPG, PNG, or WebP · max 8 MB</small></span>
+          <input id="movie-banner-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+        </label>
+        <label class="field-label" for="movie-banner-url">Or paste an image URL</label>
+        <input id="movie-banner-url" class="form-control" type="url" placeholder="https://…" autocomplete="off" />
+        <div id="banner-preview" class="banner-preview" hidden>
+          <img id="banner-preview-image" alt="Banner preview" />
+          <button id="remove-banner" type="button" aria-label="Remove banner image">×</button>
+        </div>
+
+        <div id="movie-drive-field">
+          <label class="field-label" for="movie-drive-link">Watch link</label>
+          <input id="movie-drive-link" class="form-control" type="text" placeholder="https://example.com/video-or-page" autocomplete="off" required />
+          <p class="field-hint">Paste any public http:// or https:// link that should open when the title is watched.</p>
+        </div>
+
+        <div id="episodes-section" class="episode-form-section" hidden>
+          <div class="episode-form-heading">
+            <div>
+              <span class="field-label">Episodes</span>
+              <p class="field-hint">Each episode needs a season, number, title, and watch link.</p>
+            </div>
+            <button id="add-episode" class="add-episode-button" type="button">+ Add episode</button>
+          </div>
+          <div id="episode-form-list"></div>
+        </div>
+
+        <p id="form-error" class="form-error" role="alert"></p>
+        <div class="form-actions">
+          <button id="cancel-add-movie" class="cancel-button" type="button">Cancel</button>
+          <button id="submit-movie" class="button submit-movie-button" type="submit">Add movie <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Password gate for the settings menu -->
+    <dialog id="password-dialog" class="add-dialog password-dialog" aria-labelledby="password-title">
+      <div class="add-dialog-heading">
+        <div>
+          <h2 id="password-title">Enter password</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form id="password-form" novalidate>
+        <label class="field-label" for="password-input">Password to open settings</label>
+        <input id="password-input" class="form-control" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <p id="password-error" class="form-error" role="alert"></p>
+        <div class="form-actions">
+          <button id="password-cancel" class="cancel-button" type="button">Cancel</button>
+          <button class="button submit-movie-button" type="submit">Unlock</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Advanced settings -->
+    <dialog id="advanced-dialog" class="add-dialog advanced-dialog" aria-labelledby="advanced-title">
+      <div class="add-dialog-heading">
+        <div>
+          <h2 id="advanced-title">Advanced settings</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+
+      <section class="adv-section">
+        <h3>TMDB title matching</h3>
+        <p class="field-hint">Choose the exact movie or show from TMDB. The selected TMDB ID is saved with your title and synced with your cloud library.</p>
+        <label class="field-label" for="adv-tmdb-title">Your library title</label>
+        <select id="adv-tmdb-title" class="form-control"></select>
+        <label class="field-label" for="adv-tmdb-query">Search TMDB title</label>
+        <input id="adv-tmdb-query" class="form-control" type="search" placeholder="Search by title…" autocomplete="off" />
+        <div class="adv-row"><button id="adv-tmdb-search" class="cancel-button" type="button">Find matches</button></div>
+        <p id="adv-tmdb-status" class="field-hint" role="status"></p>
+        <div id="adv-tmdb-results" class="adv-list"></div>
+      </section>
+
+      <section class="adv-section">
+        <h3>Home banner</h3>
+        <label class="field-label" for="adv-banner-title">Featured title</label>
+        <select id="adv-banner-title" class="form-control"></select>
+        <label class="field-label" for="adv-banner-seconds">Change every <span>(seconds)</span></label>
+        <input id="adv-banner-seconds" class="form-control" type="number" min="3" max="300" step="1" />
+        <p id="adv-banner-hint" class="field-hint"></p>
+        <div class="adv-row"><button id="adv-banner-reset" class="cancel-button" type="button">Reset to default</button></div>
+      </section>
+
+      <section class="adv-section">
+        <h3>Home category</h3>
+        <label class="adv-check"><input id="adv-shelf-enabled" type="checkbox" /> Show a category above Movies and Shows</label>
+        <label class="field-label" for="adv-shelf-source">What it shows</label>
+        <select id="adv-shelf-source" class="form-control">
+          <option value="both">Recently watched and favorites</option>
+          <option value="recent">Only recently watched</option>
+          <option value="favorites">Only favorites</option>
+        </select>
+        <label class="field-label" for="adv-shelf-name">Category name <span>(leave blank for the default)</span></label>
+        <input id="adv-shelf-name" class="form-control" type="text" maxlength="40" autocomplete="off" />
+        <p class="field-hint">It only appears when you have a title that matches.</p>
+        <div class="adv-row"><button id="adv-shelf-reset" class="cancel-button" type="button">Reset to default</button></div>
+      </section>
+
+      <section class="adv-section">
+        <h3>Favorite titles <span id="adv-fav-count" class="adv-count"></span></h3>
+        <div id="adv-fav-list" class="adv-list"></div>
+      </section>
+
+      <section class="adv-section">
+        <h3>Recently watched tags</h3>
+        <div id="adv-recent-list" class="adv-list"></div>
+        <div class="adv-row"><button id="adv-recent-clear" class="cancel-button" type="button">Remove all tags</button></div>
+      </section>
+    </dialog>
+
+    <!-- Cloud CSV (Supabase Storage) -->
+    <dialog id="cloud-csv-dialog" class="add-dialog cloud-dialog" aria-labelledby="cloud-csv-title">
+      <div class="add-dialog-heading">
+        <div>
+          <h2 id="cloud-csv-title">Cloud CSV</h2>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close">×</button>
+      </div>
+      <button id="cloud-upload-btn" class="upload-control cloud-option" type="button">
+        <span class="upload-icon" aria-hidden="true">⇧</span>
+        <span><strong>Upload a new CSV</strong><small>Replaces the CSV currently saved in the cloud</small></span>
+      </button>
+      <button id="cloud-load-btn" class="upload-control cloud-option" type="button">
+        <span class="upload-icon" aria-hidden="true">⇩</span>
+        <span><strong>Load the cloud CSV</strong><small>Imports it just like a normal CSV import</small></span>
+      </button>
+      <p id="cloud-csv-status" class="cloud-status" role="status"></p>
+    </dialog>
+
+    <!-- In-site player for watch links -->
+    <dialog id="player-dialog" class="player-dialog" aria-label="Player">
+      <div class="player-bar">
+        <button id="player-close" class="player-close" type="button" aria-label="Close player">×</button>
+        <div id="player-title" class="player-title"></div>
+        <button id="player-newtab" class="player-newtab" type="button">Open in new tab</button>
+      </div>
+      <div id="player-stage" class="player-stage"></div>
+    </dialog>
+
+    <script type="application/json" id="vora-data">{"app":"vora","version":1,"savedAt":"","titles":[]}</script>
+    <script src="script.js" defer></script>
+  </body>
+</html>
