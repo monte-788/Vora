@@ -1,0 +1,88 @@
+/* ========================================================================
+   FILE: css/08-responsive-phones.css
+   WHAT IT STYLES: Changes for phones and small screens.
+   ======================================================================== */
+
+/* ---------- Responsive ---------- */
+@media (min-width: 1500px) { :root { --cols: 8.4; --row-gap: 12px; } }
+@media (max-width: 1280px) { :root { --cols: 6.4; } }
+@media (max-width: 1000px) { :root { --cols: 5.3; } .hero-content { max-width: min(520px, 62%); } }
+
+/* Phones: vertical posters, a poster-led hero, filter chips under the header. */
+@media (max-width: 760px) {
+  :root { --gutter: 14px; --header-h: 56px; --cols: 3.3; --row-gap: 8px; --radius: 7px; }
+  .topbar { grid-template-columns: 1fr auto; grid-template-areas: "brand actions" "nav nav"; column-gap: 8px; row-gap: 0; padding-bottom: 8px; background: linear-gradient(to bottom, rgba(10, 11, 16, .95) 0%, rgba(10, 11, 16, .75) 70%, rgba(10, 11, 16, 0) 100%); }
+  .topbar.scrolled { padding-bottom: 8px; }
+  .brand { grid-area: brand; min-height: var(--header-h); }
+  .brand-word { font-size: 20px; }
+  .topbar-actions { grid-area: actions; min-height: var(--header-h); }
+  .main-nav { grid-area: nav; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-link { flex: 0 0 auto; padding: 7px 15px; border: 1px solid rgba(255, 255, 255, .28); font-size: 13px; background: rgba(10, 11, 16, .4); }
+  .nav-link.active { background: #fff; border-color: #fff; color: #0a0b10; }
+  .search-box.open { position: absolute; top: calc(env(safe-area-inset-top) + 8px); left: var(--gutter); right: 56px; height: 40px; z-index: 3; }
+  .search-box.open input { width: 100%; flex: 1; }
+  .search-box.open #search-toggle { flex: 0 0 auto; }
+
+  .hero { min-height: 0; display: block; }
+  .hero-art { background: var(--hero-poster) center / cover no-repeat, var(--surface); filter: blur(42px) saturate(1.4); transform: scale(1.35); opacity: .55; }
+  .hero-scrim { background: linear-gradient(0deg, var(--bg) 0%, rgba(10, 11, 16, .5) 40%, rgba(10, 11, 16, .15) 100%); }
+  .hero-inner { display: flex; flex-direction: column; align-items: center; padding: calc(var(--header-h) + 58px + env(safe-area-inset-top)) var(--gutter) 70px; }
+  .hero-poster { display: block; width: min(56vw, 250px); aspect-ratio: 2 / 3; padding: 0; border: 0; border-radius: 14px; background: var(--hero-poster) center / cover no-repeat, var(--surface-2); box-shadow: 0 22px 60px rgba(0, 0, 0, .65), 0 0 0 1px rgba(255, 255, 255, .08); cursor: pointer; transition: opacity .45s ease; }
+  .hero-poster[hidden] { display: none !important; }
+  .hero-content { max-width: 100%; width: 100%; margin-top: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .hero-eyebrow { margin-bottom: 8px; font-size: 12px; }
+  .eyebrow-mark { font-size: 18px; }
+  .hero h1 { font-size: 26px; letter-spacing: -.02em; -webkit-line-clamp: 2; line-clamp: 2; }
+  .hero-meta { justify-content: center; gap: 4px 10px; margin-top: 10px; font-size: 13px; }
+  .hero-description { display: none; }
+  .hero-empty .hero-description { display: block; margin-top: 12px; font-size: 14px; max-width: 320px; }
+  .hero-actions { width: 100%; max-width: 420px; gap: 10px; margin-top: 18px; }
+  .hero-actions .button { flex: 1 1 0; min-height: 46px; padding: 0 14px; font-size: 15px; }
+  .hero-dots { right: auto; left: 50%; transform: translateX(-50%); bottom: 80px; }
+  .hero-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .hero-dot.active { width: 7px; }
+  .hero-empty .hero-inner { padding-top: calc(var(--header-h) + 110px); }
+
+  .content-area { margin-top: -48px; }
+  .shelf { margin-bottom: 22px; }
+  .shelf h2 { font-size: 18px; }
+  .shelf-controls { display: none; }
+  .card-row { padding: 6px var(--gutter); margin: 0; }
+  .card-copy { padding: 36px 7px 8px; }
+  .card-title { font-size: 12px; }
+  .card-year, .card-tag { font-size: 10px; }
+  .watched-badge { font-size: 9px; padding: 3px 4px; }
+  .grid-mode .content-area { padding-top: calc(var(--header-h) + 62px); }
+  .grid-mode .card-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+  .title-dialog, .player-dialog { border-radius: 0; }
+  .title-dialog[open] { animation: sheet-up .3s cubic-bezier(.2, .8, .2, 1); }
+  @keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dialog-art { height: 100dvh; }
+  .dialog-art::after { background: linear-gradient(0deg, var(--bg) 0%, rgba(10, 11, 16, .82) 34%, rgba(10, 11, 16, .2) 70%, rgba(10, 11, 16, .5) 100%); }
+  .hero h1 { text-shadow: none; }
+  .title-dialog .dialog-close { top: calc(12px + env(safe-area-inset-top)); right: 12px; }
+  .trailer-mute { top: calc(12px + env(safe-area-inset-top)); right: 62px; }
+  .dialog-content { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+  .dialog-content::before { height: max(14dvh, calc(100dvh - 520px)); }
+  .dialog-content h2 { font-size: 32px; max-width: none; }
+  .dialog-watch { font-size: 16px; padding: 0 16px; }
+  .favorite-button { padding: 0 16px; }
+  .episode-thumb { flex-basis: 118px; }
+  .episode-label { font-size: 14px; }
+
+  .add-dialog { inset: auto 0 0 0; margin: 0 auto; width: 100%; max-width: none; max-height: 94dvh; padding: 20px 18px calc(24px + env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; border-width: 1px 0 0; }
+  .add-dialog[open] { animation: sheet-up .3s cubic-bezier(.2, .8, .2, 1); }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-field .field-label { min-height: auto; }
+  .form-control { font-size: 16px; } /* stops iOS zoom on focus */
+  .toast { bottom: calc(22px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 360px) { :root { --cols: 3.1; } .hero h1 { font-size: 23px; } }
+@media (min-width: 761px) and (max-width: 1000px) { .grid-mode .card-row { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
+@media (min-width: 1001px) { .grid-mode .card-row { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

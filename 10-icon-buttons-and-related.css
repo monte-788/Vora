@@ -1,0 +1,37 @@
+/* ========================================================================
+   FILE: css/10-icon-buttons-and-related.css
+   WHAT IT STYLES: Icon-only buttons, the trailer controls and the Related titles row.
+   ======================================================================== */
+
+/* ---------- Icon-only action buttons ---------- */
+.dialog-primary .icon-btn { flex: 0 0 auto; width: 50px; height: 50px; min-height: 0; padding: 0; border-radius: 50%; gap: 0; }
+.icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: fill .18s, transform .18s; }
+.icon-btn svg.solid { fill: currentColor; stroke: currentColor; stroke-width: 1.5; }
+.icon-btn[aria-pressed="true"] svg.fillable { fill: currentColor; }
+.icon-btn:disabled { opacity: .55; cursor: wait; }
+.favorite-button.icon-btn svg { fill: transparent; stroke: #fff; }
+.favorite-button.icon-btn.is-favorite svg { fill: #ff3b4e; stroke: #ff3b4e; }
+.feature-action[hidden], .favorite-button[hidden] { display: none; }
+@media (max-width: 760px) { .dialog-primary .icon-btn { flex: 0 0 auto; width: 46px; height: 46px; padding: 0; } .dialog-primary .dialog-watch { flex: 1 1 100%; } }
+/* While a trailer plays, only the stop button stays */
+.title-dialog.trailer-playing .dialog-primary > :not(#dialog-trailer),
+.title-dialog.trailer-playing .dialog-actions,
+.title-dialog.trailer-playing .remove-confirm,
+.title-dialog.trailer-playing .dialog-episode-form { display: none !important; }
+.title-dialog.trailer-playing .dialog-content > :not(.dialog-primary) { display: none !important; }
+.title-dialog.trailer-playing .dialog-content { display: flex; flex-direction: column; justify-content: flex-end; min-height: 100dvh; padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
+.title-dialog.trailer-playing .dialog-content::before { display: none; }
+.title-dialog.trailer-playing { overflow: hidden; }
+
+/* Related titles */
+.related-section { margin-top: 34px; }
+.related-section h3 { margin: 0 0 14px; font-size: 20px; font-weight: 800; }
+.related-row { display: grid; grid-auto-flow: column; grid-auto-columns: clamp(118px, 12vw, 168px); gap: 10px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: none; scroll-snap-type: x proximity; }
+.related-row::-webkit-scrollbar { display: none; }
+.related-row .title-card { scroll-snap-align: start; }
+@media (max-width: 760px) { .related-row { grid-auto-columns: 112px; gap: 8px; } }
+
+
+/* ---------- Trailer: remove the hero's dark fade while a trailer plays ---------- */
+.dialog-art::after { transition: opacity .5s ease; }
+.dialog-art.is-trailer::after { opacity: 0; }

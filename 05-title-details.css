@@ -1,0 +1,94 @@
+/* ========================================================================
+   FILE: css/05-title-details.css
+   WHAT IT STYLES: The title page: full-screen banner, details and the episode list.
+   ======================================================================== */
+
+/* ---------- Title details ---------- */
+.title-dialog { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; padding: 0; border: 0; border-radius: 0; overflow: hidden auto; background: var(--bg); color: var(--text); box-shadow: none; overscroll-behavior: contain; scrollbar-width: thin; }
+.title-dialog::backdrop { background: #000; }
+.title-dialog[open] { animation: title-in .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes title-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* Full-screen hero: the banner (or trailer) fills the first screen, details sit at its bottom-left */
+.dialog-art { position: absolute; top: 0; left: 0; right: 0; height: 100dvh; overflow: hidden; background: #1a1d2b center 20% / cover no-repeat; }
+.dialog-art::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background:
+  linear-gradient(90deg, rgba(10, 11, 16, .88) 0%, rgba(10, 11, 16, .55) 32%, rgba(10, 11, 16, 0) 68%),
+  linear-gradient(0deg, var(--bg) 0%, rgba(10, 11, 16, .7) 22%, rgba(10, 11, 16, 0) 52%),
+  linear-gradient(180deg, rgba(10, 11, 16, .55) 0%, rgba(10, 11, 16, 0) 18%); }
+.trailer-stage { position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity .6s ease; background: #000; }
+.trailer-stage.playing { opacity: 1; }
+.trailer-stage iframe { position: absolute; top: 50%; left: 50%; width: max(100vw, 177.78dvh); height: max(100dvh, 56.25vw); transform: translate(-50%, -50%); border: 0; pointer-events: none; }
+.title-dialog .dialog-close { position: fixed; z-index: 10; top: calc(18px + env(safe-area-inset-top)); right: clamp(14px, 2.4vw, 28px); }
+.dialog-close { position: absolute; z-index: 3; top: 14px; right: 14px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0 0 2px; border: 0; border-radius: 50%; background: rgba(10, 11, 16, .75); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; backdrop-filter: blur(8px); transition: background-color .15s; }
+.dialog-close:hover { background: rgba(60, 64, 84, .9); }
+.trailer-mute { position: fixed; z-index: 10; top: calc(18px + env(safe-area-inset-top)); right: calc(clamp(14px, 2.4vw, 28px) + 52px); display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: rgba(10, 11, 16, .75); color: #fff; cursor: pointer; backdrop-filter: blur(8px); transition: background-color .15s; }
+.trailer-mute[hidden] { display: none; }
+.trailer-mute:hover { background: rgba(60, 64, 84, .9); }
+.trailer-mute svg { width: 22px; height: 22px; fill: currentColor; }
+.trailer-mute .icon-sound { display: none; }
+.trailer-mute[aria-pressed="false"] .icon-muted { display: none; }
+.trailer-mute[aria-pressed="false"] .icon-sound { display: block; }
+.dialog-content { position: relative; z-index: 2; padding: 0 var(--gutter) 60px; }
+/* Spacer that pushes the details to the bottom of the first screen */
+.dialog-content::before { content: ""; display: block; height: max(18dvh, calc(100dvh - 470px)); }
+.dialog-content h2 { max-width: 16ch; margin: 0 0 12px; font-size: clamp(34px, 5.4vw, 68px); font-weight: 800; line-height: 1.02; letter-spacing: -.03em; text-shadow: 0 2px 24px rgba(0, 0, 0, .6); }
+.dialog-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 18px; color: var(--text-2); font-size: 14px; font-weight: 600; }
+.dialog-meta .star { color: var(--good); font-weight: 800; }
+.age-badge { padding: 1px 7px; border: 1.5px solid rgba(255, 255, 255, .55); border-radius: 4px; font-size: 12px; font-weight: 700; }
+.dialog-meta span.watched-badge { padding: 3px 8px; font-size: 11px; }
+.dialog-primary { display: flex; gap: 10px; align-items: stretch; }
+@media (min-width: 761px) { .dialog-watch { flex: 0 0 auto; min-width: 240px; } }
+.dialog-watch { display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex: 1 1 auto; min-height: 50px; padding: 0 28px; border: 0; border-radius: 8px; background: #fff; color: #0a0b10; font-size: 17px; font-weight: 800; cursor: pointer; transition: background-color .15s, transform .15s; }
+@media (min-width: 761px) { .title-dialog .dialog-watch { flex: 0 0 auto; min-width: 240px; } }
+.dialog-watch:hover { background: #dfe2ea; }
+.dialog-watch:active { transform: scale(.98); }
+.dialog-watch svg { width: 24px; height: 24px; fill: currentColor; }
+.favorite-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 20px; border: 0; border-radius: 8px; background: var(--surface-3); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color .15s; }
+.favorite-button:hover { background: #3a3f58; }
+.favorite-button svg { width: 20px; height: 20px; fill: transparent; stroke: #fff; stroke-width: 1.8; transition: fill .18s, stroke .18s, transform .18s; }
+.favorite-button.is-favorite svg { fill: #ff3b4e; stroke: #ff3b4e; transform: scale(1.08); }
+.dialog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.add-episode-button { min-height: 38px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; }
+.add-episode-button:hover { background: rgba(255, 255, 255, .1); }
+.remove-title-button { margin-left: auto; min-height: 38px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.remove-title-button:hover { color: var(--danger); background: rgba(255, 107, 120, .1); }
+.remove-confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding: 14px; border: 1px solid rgba(255, 107, 120, .35); border-radius: 10px; background: rgba(255, 107, 120, .08); }
+.remove-confirm > p:first-child { flex: 1 1 100%; margin: 0; color: #ffd9dc; font-size: 14px; line-height: 1.4; }
+.danger-button { min-height: 40px; padding: 0 16px; border: 0; border-radius: 8px; background: #e0485a; color: #fff; font-weight: 700; cursor: pointer; }
+.danger-button:hover:not(:disabled) { background: #f0596b; }
+.danger-button:disabled { opacity: .6; cursor: wait; }
+.remove-error { flex: 1 1 100%; margin: 0; min-height: 0; }
+.remove-error:empty { display: none; }
+.remove-confirm[hidden], .dialog-episode-form[hidden] { display: none; }
+.dialog-episode-form { margin: 14px 0 4px; }
+.dialog-description { margin: 20px 0 8px; max-width: 62ch; color: #dde1ea; font-size: 15px; line-height: 1.65; }
+.dialog-description:empty { display: none; }
+
+/* Episodes — a vertical list with stills, like a streaming app */
+.season-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 26px 0 8px; }
+#season-select { padding: 9px 36px 9px 14px; border: 0; border-radius: 8px; background: var(--surface-3); color: #fff; font-size: 15px; font-weight: 700; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; }
+#season-select option { background: var(--surface-2); }
+.episode-count-note { color: var(--muted); font-size: 13px; font-weight: 600; }
+.episode-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.episode-card { position: relative; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 10px; transition: background-color .15s; }
+.episode-card:hover { background: rgba(255, 255, 255, .06); }
+.episode-card-watch { display: flex; flex: 1 1 auto; align-items: center; gap: 14px; min-width: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
+.episode-card-watch[hidden] { display: none; }
+.episode-thumb { position: relative; flex: 0 0 clamp(116px, 26vw, 168px); aspect-ratio: 16 / 9; display: grid; place-items: center; border-radius: 8px; background: var(--surface-3) center / cover no-repeat; color: #fff; overflow: hidden; }
+.episode-thumb::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .28); transition: background-color .15s; }
+.episode-thumb svg { position: relative; width: 30px; height: 30px; padding: 6px; border: 1.5px solid rgba(255, 255, 255, .85); border-radius: 50%; background: rgba(0, 0, 0, .45); fill: #fff; }
+.episode-card-watch:hover .episode-thumb::before { background: rgba(0, 0, 0, .1); }
+.episode-label { font-size: 15px; font-weight: 600; line-height: 1.35; color: #f0f2f8; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; }
+.episode-remove { flex: 0 0 auto; display: grid; place-items: center; width: 30px; height: 30px; padding: 0 0 2px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font-size: 20px; cursor: pointer; }
+.episode-remove:hover { background: rgba(255, 107, 120, .15); color: var(--danger); }
+
+.cast-section { margin-top: 30px; }
+.cast-section h3 { margin: 0 0 14px; font-size: 20px; font-weight: 800; }
+.cast-row { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+.cast-row::-webkit-scrollbar { display: none; }
+.cast-member { flex: 0 0 88px; text-align: center; }
+.cast-photo { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: var(--surface-3) center / cover no-repeat; color: var(--muted); font-size: 28px; font-weight: 800; }
+.cast-name { margin-top: 9px; font-size: 13px; font-weight: 700; line-height: 1.25; color: #f0f2f8; }
+.cast-role { margin-top: 2px; font-size: 12px; line-height: 1.25; color: var(--muted); }
+.cast-note { margin: 0; font-size: 14px; color: var(--muted); }

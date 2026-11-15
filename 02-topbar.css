@@ -1,0 +1,47 @@
+/* ========================================================================
+   FILE: css/02-topbar.css
+   WHAT IT STYLES: The top bar: logo, Home/Movies/Shows/Discover tabs, search box and menu.
+   ======================================================================== */
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 32px;
+  min-height: var(--header-h); padding: env(safe-area-inset-top) var(--gutter) 0;
+  background: linear-gradient(to bottom, rgba(10, 11, 16, .92) 0%, rgba(10, 11, 16, .55) 60%, rgba(10, 11, 16, 0) 100%);
+  transition: background-color .25s ease, backdrop-filter .25s ease;
+}
+.topbar.scrolled { background: rgba(10, 11, 16, .94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--line); }
+.brand { display: inline-flex; align-items: center; gap: 9px; color: var(--accent); }
+.brand-mark { width: 24px; height: 24px; }
+.brand-word { font-weight: 800; font-size: 22px; letter-spacing: .16em; line-height: 1; }
+.main-nav { display: flex; align-items: center; gap: 6px; }
+.nav-link { border: 0; background: none; padding: 8px 12px; border-radius: 999px; color: var(--text-2); font-size: 14px; font-weight: 600; cursor: pointer; transition: color .15s, background-color .15s; }
+.nav-link:hover { color: #fff; }
+.nav-link.active { color: #fff; font-weight: 700; }
+.topbar-actions { display: flex; align-items: center; gap: 6px; justify-self: end; }
+.icon-button { display: grid; place-items: center; width: 40px; height: 40px; border: 0; padding: 0; background: transparent; border-radius: 50%; cursor: pointer; }
+.icon-button:hover { background: rgba(255, 255, 255, .1); }
+.icon-button svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.search-box { display: flex; align-items: center; border: 1px solid transparent; border-radius: 999px; transition: border-color .2s, background-color .2s; }
+.search-box.open { border-color: rgba(255, 255, 255, .6); background: rgba(0, 0, 0, .75); }
+.search-box input { width: 0; opacity: 0; border: 0; padding: 0; outline: 0; background: transparent; color: #fff; font-size: 14px; transition: width .25s ease, opacity .2s ease; }
+.search-box.open input { width: 220px; opacity: 1; padding: 0 14px 0 2px; }
+.search-box input::placeholder { color: #8a90a3; }
+.search-box input::-webkit-search-cancel-button { display: none; }
+.menu-wrap { position: relative; }
+.menu-toggle { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.menu-toggle:hover, .menu-toggle[aria-expanded="true"] { background: rgba(255, 255, 255, .12); }
+.menu-toggle svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; }
+.menu-panel { position: absolute; top: calc(100% + 10px); right: 0; z-index: 40; width: min(300px, calc(100vw - 24px)); padding: 10px; border: 1px solid var(--line); border-radius: 14px; background: rgba(20, 22, 31, .98); box-shadow: 0 24px 70px rgba(0, 0, 0, .7); backdrop-filter: blur(18px); }
+.menu-stats { display: flex; gap: 8px; margin-bottom: 8px; }
+.menu-stat { flex: 1; padding: 10px 8px; border-radius: 10px; background: rgba(255, 255, 255, .05); text-align: center; }
+.menu-stat strong { display: block; font-size: 22px; font-weight: 800; color: #fff; }
+.menu-stat span { font-size: 12px; color: var(--muted); }
+.menu-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: var(--text); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.menu-item:hover { background: rgba(255, 255, 255, .08); }
+.menu-item:disabled { opacity: .4; cursor: not-allowed; }
+.menu-item .menu-icon { width: 20px; text-align: center; color: var(--accent); font-size: 17px; }
+.menu-item.danger { color: var(--danger); }
+.menu-item.danger .menu-icon { color: var(--danger); }
+.menu-sep { height: 1px; margin: 6px 4px; background: var(--line); }

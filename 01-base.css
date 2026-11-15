@@ -1,0 +1,46 @@
+/* ========================================================================
+   FILE: css/01-base.css
+   WHAT IT STYLES: Colours, fonts and basic page rules that everything else builds on. The colour variables at the top (like --bg and --text) control the whole look.
+   ======================================================================== */
+
+/* ==========================================================================
+   Vora — streaming-app look: poster rows, cinematic hero, detail sheet.
+   Phones get vertical posters and a poster-led hero; desktop gets backdrops.
+   ========================================================================== */
+:root {
+  color-scheme: dark;
+  --bg: #0a0b10;
+  --surface: #14161f;
+  --surface-2: #1e2130;
+  --surface-3: #2a2e42;
+  --line: rgba(255, 255, 255, .09);
+  --text: #f3f5fa;
+  --text-2: #c3c8d6;
+  --muted: #8c93a8;
+  --accent: #5b91ff;
+  --accent-2: #3f74e6;
+  --good: #46d369;
+  --gold: #f5c518;
+  --danger: #ff6b78;
+  --gutter: clamp(16px, 4vw, 64px);
+  --header-h: 64px;
+  --row-gap: 10px;
+  --cols: 6.4;
+  --radius: 8px;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+* { box-sizing: border-box; }
+html { scrollbar-color: #2a2e42 var(--bg); -webkit-tap-highlight-color: transparent; }
+body { margin: 0; min-width: 320px; background: var(--bg); color: var(--text); overflow-x: hidden; }
+button, input, select, textarea { font: inherit; }
+button { color: inherit; }
+a { color: inherit; text-decoration: none; }
+[hidden] { display: none !important; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .title-card:focus-visible {
+  outline: 2px solid #fff; outline-offset: 2px;
+}
+.app-shell { min-height: 100vh; min-height: 100dvh; overflow-x: clip; }

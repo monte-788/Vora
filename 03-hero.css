@@ -1,0 +1,45 @@
+/* ========================================================================
+   FILE: css/03-hero.css
+   WHAT IT STYLES: The big banner at the top of the home page.
+   ======================================================================== */
+
+/* ---------- Hero ---------- */
+.hero { position: relative; isolation: isolate; min-height: min(80vh, 780px); display: flex; align-items: flex-end; overflow: hidden; --hero-banner: none; --hero-poster: none; }
+.hero-art {
+  position: absolute; inset: 0; z-index: -2;
+  background: var(--hero-banner) center 20% / cover no-repeat, var(--surface);
+  transition: opacity .45s ease;
+}
+.hero-scrim {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(10, 11, 16, .95) 0%, rgba(10, 11, 16, .72) 28%, rgba(10, 11, 16, 0) 68%),
+    linear-gradient(0deg, var(--bg) 0%, rgba(10, 11, 16, .6) 18%, rgba(10, 11, 16, 0) 48%),
+    linear-gradient(180deg, rgba(10, 11, 16, .65) 0%, rgba(10, 11, 16, 0) 22%);
+}
+.hero-inner { width: 100%; padding: calc(var(--header-h) + 60px) var(--gutter) 130px; }
+.hero-content { max-width: min(560px, 52%); transition: opacity .45s ease; }
+.hero-poster { display: none; }
+.hero-eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; color: var(--text-2); font-size: 14px; font-weight: 700; letter-spacing: .04em; }
+.eyebrow-mark { color: var(--accent); font-weight: 800; font-size: 22px; line-height: 1; }
+.hero h1 { margin: 0; font-size: clamp(38px, 5.4vw, 80px); font-weight: 800; line-height: 1.02; letter-spacing: -.025em; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 0 2px 30px rgba(0, 0, 0, .5); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 18px; color: var(--text-2); font-size: 15px; font-weight: 600; }
+.hero-meta .m-rating { color: var(--good); font-weight: 800; }
+.hero-meta .m-cert { padding: 1px 7px; border: 1.5px solid rgba(255, 255, 255, .55); border-radius: 4px; font-size: 12px; font-weight: 700; }
+.hero-description { max-width: 520px; margin: 14px 0 0; color: #dde1ea; font-size: 16px; line-height: 1.55; text-shadow: 0 1px 14px rgba(0, 0, 0, .6); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.hero-actions { display: flex; gap: 12px; margin-top: 24px; }
+.hero.hero-fade .hero-art, .hero.hero-fade .hero-content, .hero.hero-fade .hero-poster { opacity: 0; }
+.hero-dots { position: absolute; right: var(--gutter); bottom: 120px; display: flex; gap: 8px; }
+.hero-dot { width: 22px; height: 4px; padding: 0; border: 0; border-radius: 2px; background: rgba(255, 255, 255, .35); cursor: pointer; transition: background-color .2s, width .2s; }
+.hero-dot:hover { background: rgba(255, 255, 255, .6); }
+.hero-dot.active { width: 34px; background: #fff; }
+
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 26px; border: 0; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background-color .15s, transform .15s; }
+.button:active { transform: scale(.97); }
+.button .btn-icon { display: inline-grid; place-items: center; width: 24px; height: 24px; }
+.button svg { width: 24px; height: 24px; fill: currentColor; }
+.button-light { background: #fff; color: #0a0b10; }
+.button-light:hover { background: #dfe2ea; }
+.button-muted { background: rgba(120, 126, 150, .45); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.button-muted:hover { background: rgba(140, 146, 170, .6); }
+.hero-empty .hero-content { max-width: 520px; }

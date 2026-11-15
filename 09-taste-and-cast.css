@@ -1,0 +1,65 @@
+/* ========================================================================
+   FILE: css/09-taste-and-cast.css
+   WHAT IT STYLES: Like/dislike buttons, recommendation shelves, cast pages and search results.
+   ======================================================================== */
+
+/* Personal taste controls and recommendation shelves */
+.feature-action { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:42px; padding:0 13px; border:1px solid var(--border,rgba(255,255,255,.16)); border-radius:9px; background:var(--surface-3); color:var(--text); font-size:13px; font-weight:750; cursor:pointer; }
+.feature-action:hover { background:rgba(91,145,255,.16); border-color:rgba(91,145,255,.5); }
+.feature-action[aria-pressed="true"] { background:rgba(91,145,255,.22); border-color:#5b91ff; color:#fff; }
+.dialog-primary { flex-wrap:wrap; }
+.unavailable-ribbon { position:absolute; z-index:3; top:10px; left:0; padding:6px 9px; background:#d62839; color:#fff; font-size:10px; font-weight:900; letter-spacing:.07em; text-transform:uppercase; }
+.title-card { position:relative; }
+.recommendation-note { color:var(--muted); font-size:12px; margin:0 0 10px; }
+@media(max-width:760px) { .feature-action { flex:1 1 calc(50% - 8px); } }
+
+/* Cast filmography page */
+.cast-member { cursor: pointer; }
+.cast-member:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+/* Cast member page — full screen, same look as the title page */
+.person-dialog { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; padding: 0; border: 0; border-radius: 0; overflow: hidden auto; background: var(--bg); color: var(--text); overscroll-behavior: contain; scrollbar-width: thin; }
+.person-dialog::backdrop { background: #000; }
+.person-dialog[open] { animation: title-in .28s cubic-bezier(.2, .8, .2, 1); }
+.person-nav { position: fixed; z-index: 10; top: calc(18px + env(safe-area-inset-top)); display: grid; place-items: center; width: 40px; height: 40px; padding: 0 0 2px; border: 0; border-radius: 50%; background: rgba(10, 11, 16, .75); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; backdrop-filter: blur(8px); transition: background-color .15s; }
+.person-nav:hover { background: rgba(60, 64, 84, .9); }
+.person-nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.person-back { left: clamp(14px, 2.4vw, 28px); padding: 0; }
+.person-close { right: clamp(14px, 2.4vw, 28px); }
+.person-hero { position: relative; isolation: isolate; overflow: hidden; padding: calc(var(--header-h) + 36px) var(--gutter) 36px; }
+.person-hero-bg { position: absolute; inset: -40px; z-index: -2; background: #1a1d2b center 20% / cover no-repeat; filter: blur(36px) saturate(1.3); transform: scale(1.1); opacity: .55; }
+.person-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10, 11, 16, .45) 0%, rgba(10, 11, 16, .75) 60%, var(--bg) 100%); }
+.person-hero-inner { display: flex; align-items: flex-end; gap: clamp(20px, 3vw, 40px); max-width: 1100px; }
+.person-photo { flex: 0 0 auto; display: grid; place-items: center; width: clamp(120px, 14vw, 190px); aspect-ratio: 2 / 3; border-radius: 14px; background: var(--surface-3) center / cover no-repeat; color: var(--muted); font-size: 56px; font-weight: 800; box-shadow: 0 18px 50px rgba(0, 0, 0, .55); }
+.person-info { min-width: 0; padding-bottom: 4px; }
+.person-kicker { margin: 0 0 8px; color: var(--accent); font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.person-kicker:empty { display: none; }
+.person-heading { margin: 0 0 8px; font-size: clamp(30px, 4.6vw, 56px); font-weight: 800; line-height: 1.04; letter-spacing: -.03em; text-shadow: 0 2px 24px rgba(0, 0, 0, .6); }
+.person-meta { margin: 0 0 12px; color: var(--text-2); font-size: 14px; font-weight: 600; }
+.person-meta:empty { display: none; }
+.person-bio { margin: 0; max-width: 70ch; color: #dde1ea; font-size: 15px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.person-bio.expanded { display: block; -webkit-line-clamp: unset; }
+.person-bio:empty { display: none; }
+.person-bio-toggle { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--accent); font-size: 14px; font-weight: 700; cursor: pointer; }
+.person-bio-toggle[hidden] { display: none; }
+.person-body { padding: 0 var(--gutter) calc(60px + env(safe-area-inset-bottom)); }
+.person-filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 8px; }
+.person-chip { padding: 8px 16px; border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; background: transparent; color: var(--text-2); font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color .15s, color .15s; }
+.person-chip:hover { background: rgba(255, 255, 255, .1); }
+.person-chip.active { background: #fff; border-color: #fff; color: #0a0b10; }
+.person-section { margin-top: 28px; }
+.person-section h3 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 14px; font-size: 20px; font-weight: 800; }
+.person-section h3 small { color: var(--muted); font-size: 14px; font-weight: 600; }
+.person-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.person-note { margin: 30px 0; color: var(--muted); font-size: 15px; }
+@media (max-width: 760px) {
+  .person-hero { padding-top: calc(var(--header-h) + 24px + env(safe-area-inset-top)); }
+  .person-hero-inner { flex-direction: column; align-items: flex-start; }
+  .person-photo { width: 110px; }
+  .person-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .person-nav { top: calc(12px + env(safe-area-inset-top)); }
+}
+
+/* Search results */
+.search-results { margin-bottom: 24px; scroll-margin-top: calc(var(--header-h) + 12px); }
+.search-results[hidden] { display: none; }
+.search-results .shelf-heading h2 { font-size: 18px; }
