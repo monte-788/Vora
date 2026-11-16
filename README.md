@@ -8,7 +8,7 @@ Open `index.html` in a browser to run the app. Nothing needs to be installed.
 |---|---|
 | `index.html` | The page itself: all the buttons, windows and text you see. It also lists, in order, which style and code files to load. |
 | `css/` | **How things look** (colours, sizes, spacing). 12 small files, one per area of the screen. |
-| `js/` | **How things work** (what happens when you click). 28 small files, one per feature. |
+| `js/` | **How things work** (what happens when you click). 29 small files, one per feature. |
 
 ## The code files (`js/`), in the order they load
 
@@ -41,23 +41,43 @@ Open `index.html` in a browser to run the app. Nothing needs to be installed.
 | `25-menu-and-empty-library.js` | Top-right menu + "Empty media library" |
 | `26-discover.js` | The Discover tab |
 | `27-admin-control.js` | Admin features (kick, maintenance lock, forced re-login) |
-| `28-start-app.js` | Last step: starts the app |
+| `28-cloud-sync.js` | Shared cloud sync of Watched / Recently watched / Liked / Favorited / Continue watching, and TMDB title matches |
+| `29-start-app.js` | Last step: starts the app |
 
 Every file begins with a box explaining what it does and when you would open it.
 
 ## Important rules
 
-1. **Order matters.** The files must stay in the same order in `index.html` (01 first, 28 last). Files later in the list use things defined by earlier ones. If you add a new file, add it to the list in `index.html` *before* `28-start-app.js`.
+1. **Order matters.** The files must stay in the same order in `index.html` (01 first, 29 last). Files later in the list use things defined by earlier ones. If you add a new file, add it to the list in `index.html` *before* `29-start-app.js`.
 2. **Keep the folder together.** `index.html`, `css/` and `js/` must stay side by side. The "Export library" download is a copy of `index.html`, so keep it next to `css/` and `js/` too (just as it needed `script.js` and `style.css` before).
 3. **Server address and key** live near the top of `js/02-server-connection.js`.
 4. **Colours** live at the top of `css/01-base.css` (the lines starting with `--`).
 
 ## What changed compared with the original
 
-Nothing about how the app works. The code was only cut into files and given explanatory headers, plus three tiny moves needed because the code now lives in several files:
+Nothing about how the app works. (Original refactor note) The code was only cut into files and given explanatory headers, plus three tiny moves needed because the code now lives in several files:
 
 - `adminKey()` moved from the admin file into `02-server-connection.js` (the server code uses it the instant it loads).
 - The `applyDiscoverLock();` line moved to `28-start-app.js` (it needs the password-gate file, so it runs after everything has loaded).
 - The three startup lines (`addEpisodeRow()`, `updateTypeFields()`, `initialize()...`) moved to `28-start-app.js`.
 
 Two comments/messages were updated to point at the new file names.
+
+## Player features
+
+| Key | What it does |
+|---|---|
+| **F** | Full screen on / off (also the "Full screen" button) |
+| **C** | Subtitles on / off. If none are loaded it loads the **English** ones |
+| **+** (or **=**) / **−** | Subtitles bigger / smaller (remembered) |
+
+The player bar also has **Playback speed** (0.5×–2×, remembered) and **Auto-next** (on by default: when an episode ends, a 5-second "Up next" card plays the next episode; Cancel or turn it off any time).
+
+## Cloud sync (one-time setup)
+
+1. In Supabase open **SQL Editor**, paste the contents of `cloud-sync.sql` and press **Run**.
+2. That's it. Tags are saved to the shared `vora_tags` table the moment they change and appear on everyone's open Vora live (with a polling safety net if the live connection drops).
+
+Also synced: the **TMDB title matches** you pick in Advanced settings (stored in `vora_tmdb_matches`). When someone picks a match, everyone's copy of that title switches to it (id, year, poster, banner, description, genres).
+
+Synced tags: Watched, Recently watched, Liked/Disliked, Favorited, Continue watching (also per episode). Titles are matched between people by TMDB id (or title + year if there is no TMDB id). Everyone shares the same tags. Playback position is sent immediately when you start/stop and about every 15 seconds while watching.

@@ -12,6 +12,10 @@
 
 function showToast(message) {
   const toast = document.querySelector("#toast");
+  // The player (and full screen) sit above the rest of the page, so show the message inside them.
+  const player = document.querySelector("#player-dialog");
+  const host = document.fullscreenElement || document.webkitFullscreenElement || (player && player.open ? player : document.body);
+  if (toast.parentElement !== host) host.append(toast);
   toast.textContent = message;
   toast.classList.add("show");
   clearTimeout(toastTimer);

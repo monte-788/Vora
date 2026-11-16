@@ -209,3 +209,57 @@ subsFile.addEventListener("change", async () => {
     subsMsg.textContent = error.message;
   }
 });
+
+// ---- Subtitle size (+ / − keys) and the C shortcut ---------------------------------------
+// Size is a percentage of the normal subtitle size, remembered between visits.
+const SUB_SIZE_KEY = "vora-sub-size";
+const SUB_SIZE_MIN = 50, SUB_SIZE_MAX = 300, SUB_SIZE_STEP = 10;
+let subtitleSize = 100;
+try { subtitleSize = Number(localStorage.getItem(SUB_SIZE_KEY)) || 100; } catch { /* ignore */ }
+subtitleSize = Math.min(SUB_SIZE_MAX, Math.max(SUB_SIZE_MIN, subtitleSize));
+
+const cueStyle = document.createElement("style");
+document.head.append(cueStyle);
+function applySubtitleSize() {
+  const k = subtitleSize / 100;
+  // Same look as css/12-subtitles-and-lock.css, scaled. A bit larger when the player is full screen.
+  cueStyle.textContent =
+    `.player-stage video::cue { font-size: clamp(${16 * k}px, ${3.6 * k}vw, ${26 * k}px); }` +
+    `.player-stage:fullscreen video::cue { font-size: clamp(${22 * k}px, ${2.4 * k}vw, ${46 * k}px); }` +
+    `.player-stage:-webkit-full-screen video::cue { font-size: clamp(${22 * k}px, ${2.4 * k}vw, ${46 * k}px); }`;
+}
+applySubtitleSize();
+
+function changeSubtitleSize(direction) {
+  const next = Math.min(SUB_SIZE_MAX, Math.max(SUB_SIZE_MIN, subtitleSize + direction * SUB_SIZE_STEP));
+  if (next === subtitleSize) { showToast(`Subtitle size: ${subtitleSize}% (${direction > 0 ? "largest" : "smallest"})`); return; }
+  subtitleSize = next;
+  try { localStorage.setItem(SUB_SIZE_KEY, String(subtitleSize)); } catch { /* ignore */ }
+  applySubtitleSize();
+  showToast(`Subtitle size: ${subtitleSize}%`);
+}
+
+// C: turns subtitles on/off. If none are loaded yet it loads the English ones.
+async function toggleSubtitlesShortcut() {
+  const video = playerStage.querySelector("video");
+  if (!video || !playerSubKey) { showToast("Subtitles work when the video plays directly in Vora."); return; }
+  const track = video.querySelector("track");
+  if (track) {
+    const showing = track.track.mode === "showing";
+    track.track.mode = showing ? "hidden" : "showing";
+    showToast(showing ? "Subtitles off" : "Subtitles on");
+    return;
+  }
+  const key = playerSubKey;
+  showToast("Loading English subtitles…");
+  try {
+    const rows = await subsFetchList(key);
+    if (key !== playerSubKey) return;
+    const english = rows.find((row) => row.lang === "en") || rows.find((row) => /english/i.test(row.label || ""));
+    if (!english) { showToast("No English subtitles for this title yet. Tap Subtitles to upload one."); return; }
+    await loadSubtitle(english);
+    if (key === playerSubKey && activeSubtitleId === english.id) showToast("English subtitles on");
+  } catch (error) {
+    showToast(error.message || "Couldn't load subtitles.");
+  }
+}

@@ -207,6 +207,7 @@ function rememberTmdbMatch(item) {
   const map = loadTmdbMatches();
   map[personalIdentity(item)] = Number(item.tmdbId);
   try { localStorage.setItem(TMDB_MATCH_KEY, JSON.stringify(map)); } catch { /* storage full or unavailable */ }
+  if (typeof cloudSyncTmdbMatch === "function") cloudSyncTmdbMatch(item); // share the match with everyone (js/28-cloud-sync.js)
 }
 function applyRememberedTmdbMatches(records) {
   const map = loadTmdbMatches();

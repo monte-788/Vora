@@ -56,12 +56,17 @@ function saveRecord(record) {
   return new Promise((resolve, reject) => {
     if (!titleDB) {
       writeAutomaticBackup();
+      if (typeof cloudSyncAfterSave === "function") cloudSyncAfterSave(record);
       resolve();
       return;
     }
     const transaction = titleDB.transaction(STORE_NAME, "readwrite");
     transaction.objectStore(STORE_NAME).put(record);
-    transaction.oncomplete = () => { writeAutomaticBackup(); resolve(); };
+    transaction.oncomplete = () => {
+      writeAutomaticBackup();
+      if (typeof cloudSyncAfterSave === "function") cloudSyncAfterSave(record); // shared cloud sync (js/28-cloud-sync.js)
+      resolve();
+    };
     transaction.onerror = () =>
       reject(transaction.error || new Error("Could not save this title."));
     transaction.onabort = () =>

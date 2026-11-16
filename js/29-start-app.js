@@ -1,5 +1,5 @@
 /* ========================================================================
-   FILE: js/28-start-app.js
+   FILE: js/29-start-app.js
 
    WHAT IT DOES:
      THE LAST STEP. Starts the app once every other file has loaded. Keep
@@ -15,4 +15,4 @@ applyDiscoverLock();
 // Prepare the Add title form, then load the saved library and start the admin check.
 addEpisodeRow();
 updateTypeFields();
-initialize().then(startControl);
+initialize().then(() => { startControl(); startCloudSync(); });
