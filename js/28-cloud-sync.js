@@ -9,6 +9,7 @@
        - Recently watched
        - Liked / Disliked
        - Favorited
+       - Watchlist
        - Continue watching (progress, also per episode)
      It also shares the TMDB title matches chosen in Advanced settings.
      Everyone using Vora shares the same tags (like the community subtitles).
@@ -57,6 +58,7 @@ function tagPayload(item) {
     watched: !!item.watched,
     watched_at: Number(item.watchedAt) || 0,
     favorite: !!item.favorite,
+    watchlist: !!item.watchlist,
     reaction: item.reaction === "like" || item.reaction === "dislike" ? item.reaction : "",
     last_played_at: Number(item.lastPlayedAt) || 0,
     progress_seconds: Math.floor(Number(item.progressSeconds) || 0),
@@ -65,19 +67,20 @@ function tagPayload(item) {
   };
 }
 function tagsEmpty(p) {
-  return !p.watched && !p.favorite && !p.reaction && !p.last_played_at && !p.progress_seconds && !Object.keys(p.episodes).length;
+  return !p.watched && !p.favorite && !p.watchlist && !p.reaction && !p.last_played_at && !p.progress_seconds && !Object.keys(p.episodes).length;
 }
 // The tags themselves (not the ticking progress numbers): when one of these changes we push instantly.
 function tagFlags(p) {
   const inProgress = p.progress_seconds > 0 && p.duration_seconds > 0 && p.duration_seconds - p.progress_seconds > 300;
   const recent = p.last_played_at > 0 && Date.now() - p.last_played_at < RECENT_MS;
-  return JSON.stringify([p.watched, p.favorite, p.reaction, recent, inProgress]);
+  return JSON.stringify([p.watched, p.favorite, p.watchlist, p.reaction, recent, inProgress]);
 }
 
 function applyTagRow(item, row) {
   item.watched = !!row.watched;
   item.watchedAt = Number(row.watched_at) || 0;
   item.favorite = !!row.favorite;
+  item.watchlist = !!row.watchlist;
   item.reaction = row.reaction === "like" || row.reaction === "dislike" ? row.reaction : "";
   item.lastPlayedAt = Number(row.last_played_at) || 0;
   item.progressSeconds = Number(row.progress_seconds) || 0;
@@ -91,7 +94,7 @@ function applyTagRow(item, row) {
   }
 }
 function rowAsPayload(row) {
-  return { title_key: row.title_key, watched: !!row.watched, watched_at: Number(row.watched_at) || 0, favorite: !!row.favorite, reaction: row.reaction || "",
+  return { title_key: row.title_key, watched: !!row.watched, watched_at: Number(row.watched_at) || 0, favorite: !!row.favorite, watchlist: !!row.watchlist, reaction: row.reaction || "",
     last_played_at: Number(row.last_played_at) || 0, progress_seconds: Number(row.progress_seconds) || 0, duration_seconds: Number(row.duration_seconds) || 0,
     episodes: row.episodes && typeof row.episodes === "object" ? row.episodes : {} };
 }
@@ -112,11 +115,16 @@ async function pushTags(item, { keepalive = false } = {}) {
   const payload = tagPayload(item);
   tagDirty.add(key); saveDirty();
   try {
-    const response = await nativeFetch(`${TAGS_REST}?on_conflict=title_key`, {
+    const send = (body) => nativeFetch(`${TAGS_REST}?on_conflict=title_key`, {
       method: "POST", keepalive,
       headers: cloudHeaders({ Prefer: "resolution=merge-duplicates,return=minimal" }),
-      body: JSON.stringify({ ...payload, updated_by: CLIENT_ID }),
+      body: JSON.stringify({ ...body, updated_by: CLIENT_ID }),
     });
+    let response = await send(payload);
+    if (response.status === 400) { // the "watchlist" column isn't in the database yet (cloud-sync.sql not re-run): sync the rest meanwhile
+      const { watchlist, ...withoutWatchlist } = payload;
+      response = await send(withoutWatchlist);
+    }
     if (response.status === 404) { cloudSyncMissing(); return false; }
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     rememberSynced(payload);
@@ -219,6 +227,7 @@ function mergeFirstSync(item, row) {
     watched: local.watched || !!row.watched,
     watched_at: Math.max(local.watched_at, Number(row.watched_at) || 0),
     favorite: local.favorite || !!row.favorite,
+    watchlist: local.watchlist || !!row.watchlist,
     reaction: row.reaction || local.reaction,
     last_played_at: Math.max(mine, theirs),
   };
@@ -372,6 +381,17 @@ async function pullMatchRows(sinceMs = 0) {
   return response.json();
 }
 
+async function fetchTagRow(key) {
+  try {
+    const query = new URLSearchParams({ select: "*", title_key: `eq.${key}`, limit: "1" });
+    const response = await nativeFetch(`${TAGS_REST}?${query}`, { headers: cloudHeaders() });
+    if (!response.ok) return null;
+    const row = (await response.json())[0] || null;
+    if (row) remoteRows.set(key, row);
+    return row;
+  } catch { return null; }
+}
+
 // Applies one shared match to every title of that name in this library. Returns the titles that changed.
 async function applyMatchRow(row) {
   if (!row || !row.identity || !Number(row.tmdb_id)) return [];
@@ -392,7 +412,8 @@ async function applyMatchRow(row) {
     if (Array.isArray(m.genres) && m.genres.length) item.genres = m.genres.slice(0, 2);
     item.cast = null; item.castAt = 0; item.runtime = 0; item.runtimeAt = 0; item.detailsAt = Date.now(); // belonged to the old match
     // Tags are filed under the title's TMDB id, so they now live under the new key.
-    const tagRow = remoteRows.get(tagKey(item));
+    let tagRow = remoteRows.get(tagKey(item));
+    if (!tagRow && cloudSyncOn) tagRow = await fetchTagRow(tagKey(item)); // the tags may not have reached us yet
     if (tagRow) { applyTagRow(item, tagRow); rememberSynced(rowAsPayload(tagRow)); }
     applyingMatch = true;
     try { await saveApplied(item); } finally { applyingMatch = false; }

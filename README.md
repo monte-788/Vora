@@ -80,4 +80,4 @@ The player bar also has **Playback speed** (0.5×–2×, remembered) and **Auto-
 
 Also synced: the **TMDB title matches** you pick in Advanced settings (stored in `vora_tmdb_matches`). When someone picks a match, everyone's copy of that title switches to it (id, year, poster, banner, description, genres).
 
-Synced tags: Watched, Recently watched, Liked/Disliked, Favorited, Continue watching (also per episode). Titles are matched between people by TMDB id (or title + year if there is no TMDB id). Everyone shares the same tags. Playback position is sent immediately when you start/stop and about every 15 seconds while watching.
+Synced tags: Watchlist, Watched, Recently watched, Liked/Disliked, Favorited, Continue watching (also per episode). Titles are matched between people by TMDB id (or title + year if there is no TMDB id). Everyone shares the same tags. Playback position is sent immediately when you start/stop and about every 15 seconds while watching.
