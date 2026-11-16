@@ -29,3 +29,10 @@
 .player-upnext-play, .player-upnext-cancel { flex: 1 1 0; border: 0; border-radius: 999px; padding: 10px 14px; font-size: 13px; font-weight: 800; cursor: pointer; }
 .player-upnext-play { background: #fff; color: #0a0b10; }
 .player-upnext-cancel { background: rgba(255, 255, 255, .16); color: #fff; }
+
+/* Tap/click layer + on-screen tool bar (phones and full screen) */
+.player-gesture { position: absolute; left: 0; right: 0; top: 0; bottom: 76px; z-index: 2; background: transparent; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.player-tools { position: absolute; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); z-index: 7; display: flex; gap: 8px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.player-tools.show { opacity: 1; pointer-events: auto; }
+.player-tool { min-width: 44px; min-height: 44px; border: 0; border-radius: 999px; padding: 0 14px; background: rgba(14, 16, 24, .82); color: #fff; font-size: 15px; font-weight: 800; cursor: pointer; backdrop-filter: blur(6px); }
+.player-tool:active { background: rgba(255, 255, 255, .28); }

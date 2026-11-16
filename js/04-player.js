@@ -54,6 +54,8 @@ function syncSpeedSelect(rate) {
     playerSpeedSelect.append(option);
   }
   playerSpeedSelect.value = value;
+  const toolSpeed = document.querySelector(".player-tool-speed");
+  if (toolSpeed) toolSpeed.textContent = `${rate}×`;
 }
 function setPlayerRate(rate) {
   try { localStorage.setItem(PLAYER_RATE_KEY, String(rate)); } catch { /* ignore */ }
@@ -83,6 +85,62 @@ function togglePlayerFullscreen() {
   else showToast("Full screen isn't available here.");
 }
 playerFullscreenButton.addEventListener("click", togglePlayerFullscreen);
+
+// ---- Touch & mouse controls on the video ---------------------------------------------------
+// Tap/click the picture = play/pause, double tap/click = full screen. The strip at the bottom is left
+// alone so the browser's own seek bar still works. A small tool bar (full screen, subtitles, subtitle
+// size, speed) fades in on activity, so everything is reachable on a phone and in full screen.
+const PLAYER_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+let playerToolsTimer = 0;
+
+function showPlayerTools(video) {
+  const tools = playerStage.querySelector(".player-tools");
+  if (!tools) return;
+  tools.classList.add("show");
+  clearTimeout(playerToolsTimer);
+  if (video && !video.paused) playerToolsTimer = setTimeout(() => tools.classList.remove("show"), 3500);
+}
+
+function attachPlayerGestures(video) {
+  const gesture = document.createElement("div");
+  gesture.className = "player-gesture";
+  let clickTimer = 0;
+  gesture.addEventListener("click", () => {
+    showPlayerTools(video);
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = 0; togglePlayerFullscreen(); return; } // second tap
+    clickTimer = setTimeout(() => {
+      clickTimer = 0;
+      if (video.paused) video.play().catch(() => {}); else video.pause();
+    }, 260);
+  });
+  gesture.addEventListener("pointermove", () => showPlayerTools(video));
+
+  const tools = document.createElement("div");
+  tools.className = "player-tools show";
+  const tool = (text, label, handler, extraClass = "") => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `player-tool ${extraClass}`.trim();
+    button.textContent = text;
+    button.title = label;
+    button.setAttribute("aria-label", label);
+    button.addEventListener("click", (event) => { event.stopPropagation(); handler(); showPlayerTools(video); });
+    return button;
+  };
+  tools.append(
+    tool("A−", "Smaller subtitles", () => changeSubtitleSize(-1)),
+    tool("A+", "Bigger subtitles", () => changeSubtitleSize(1)),
+    tool("CC", "Subtitles on/off", () => toggleSubtitlesShortcut()),
+    tool(`${savedPlayerRate()}×`, "Playback speed", () => {
+      const index = PLAYER_SPEEDS.findIndex((r) => r >= video.playbackRate - 0.001);
+      setPlayerRate(PLAYER_SPEEDS[(index + 1) % PLAYER_SPEEDS.length]);
+    }, "player-tool-speed"),
+    tool("⛶", "Full screen", togglePlayerFullscreen),
+  );
+  video.addEventListener("pause", () => showPlayerTools(video)); // stays visible while paused
+  video.addEventListener("play", () => showPlayerTools(video));
+  playerStage.append(gesture, tools);
+}
 
 function nextEpisodeOf(item, episode) {
   if (!item || !episode || item.type !== "show") return null;
@@ -154,6 +212,7 @@ function clearPlayerStage() {
   const toast = document.querySelector("#toast"); // keep the message box alive when the stage is emptied
   if (toast && playerStage.contains(toast)) document.body.append(toast);
   cancelUpNext();
+  clearTimeout(playerToolsTimer);
   resetSubtitlesUi();
   const video = playerStage.querySelector("video");
   if (video) {
@@ -322,6 +381,7 @@ function openMediaLink(url, title, item, episode) {
     });
     video.src = direct;
     playerStage.append(video);
+    attachPlayerGestures(video);
     autoLoadSavedSubtitle();
   } else {
     showPlayerFrame(url, "If nothing shows, tap “Open in new tab”.");
